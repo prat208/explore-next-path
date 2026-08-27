@@ -29,9 +29,12 @@ export function ContinueExploring({
   for (const item of items) {
     groups.set(item.relation, [...(groups.get(item.relation) ?? []), item]);
   }
-  const ordered = [...groups.entries()].sort(
-    (a, b) => (ORDER.indexOf(a[0]) + 99) % 99 - ((ORDER.indexOf(b[0]) + 99) % 99),
-  );
+  const rank = (relation: string) => {
+    const i = ORDER.indexOf(relation);
+    return i === -1 ? ORDER.length : i;
+  };
+  const ordered = [...groups.entries()].sort((a, b) => rank(a[0]) - rank(b[0]));
+
 
   return (
     <section className="border-t border-border bg-surface/25">
