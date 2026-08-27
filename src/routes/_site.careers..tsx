@@ -7,7 +7,7 @@ import { Pill } from "@/components/site/bits";
 
 type Stage = { title?: string; level?: string; focus?: string; years?: string };
 
-export const Route = createFileRoute("/_site/careers/$slug")({
+export const Route = createFileRoute("/_site/careers/")({
   loader: async ({ context, params }) => {
     const career = await context.queryClient.ensureQueryData(careerQuery(params.slug));
     if (!career) throw notFound();
