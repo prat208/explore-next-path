@@ -3,6 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { ArrowRight, Check, Circle } from "lucide-react";
 import { roadmapQuery, type RoadmapNode } from "@/lib/content";
+import { RoadmapCanvas } from "@/components/roadmap/RoadmapCanvas";
 import { ContinueExploring } from "@/components/site/ContinueExploring";
 import { SaveButton } from "@/components/site/SaveButton";
 import { Pill } from "@/components/site/bits";
