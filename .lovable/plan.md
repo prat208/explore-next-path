@@ -54,9 +54,26 @@ Build the platform skeleton properly instead of many mock pages: design system f
 **Sample content**
 - Seeded via migration: the 7 articles, 7 roadmaps, resource sets, and 6 projects you listed, plus topics, careers, opportunities and the relationships connecting them, so the "article → learn → resource → project → career → opportunity" journey works end to end.
 
-## Deliberately deferred
+## Everything else in your prompt — built in order after the foundation
 
-Explorer AI assistant, admin AI copilot, personalized digest/newsletter sending, project submissions, comments, community/campus systems, multi-language. The data model leaves room for each so none needs a rewrite.
+Nothing from your spec is dropped. The foundation above is built first because every item below plugs into it; each numbered step is a follow-up build in this same project.
+
+1. **Full interactive block library** — remaining blocks: gallery, video, flashcards, multiple choice, true/false, sorting, drag and drop, interactive scenario, comparison, timeline, chart, diagram, skill tree, flowchart, code challenge, embedded playground, terminal/output. Each is authorable in the Studio's interactive content builder and reusable across articles, lessons, roadmaps and resource pages.
+2. **Learn depth** — learning paths with modules, lessons, prerequisites, milestones, challenges and next steps rendered as interactive field manuals in the spirit of your Python handbook (persistent chapter nav, mission progress, copy-code, expected output, callouts, analogies, reveals, project cards) — as a reusable engine, not a hard-coded layout.
+3. **Careers** — full career pages: overview, role description, technical and non-technical skills, beginner-to-advanced progression, roadmap link, projects, resources, portfolio expectations, interview prep, related roles, tools, opportunities, articles. No fixed timeline promises.
+4. **Build challenges** — recurring challenges with statement, requirements, bonus features, deadline, examples, judging, leaderboard and featured projects; project upgrade ladders (basic → RAG → voice → tool use → agents).
+5. **My Explorers + personalization** — profile (interests, level, goals, career interests, learning preferences), saved items, completions, recent searches and activity; What's happening / Learn next / Read next / Build next / Opportunity / Continue / Saved.
+6. **Progress system** — real activity tracking only (article read, lesson, quiz, node, project, save, submission). No fake gamification.
+7. **Recommendation engine + "What should I do next?"** — driven by profile, relationships, activity, saves, completions, searches and roadmap progress, with explainable reasons ("because you saved 3 AI-agent resources") and a single "Your next move" surface.
+8. **Studio analytics** — content analytics (views, unique users, reading time, scroll depth, saves, shares, completion rate), search analytics (top terms, zero-result, rising, topic demand) and content gap detection that turns demand into a "create this" action.
+9. **Explorer AI layer** — assistant grounded in the Explorers content graph (e.g. a 5-hours-a-week AI-engineering plan that links to real articles, resources, roadmap nodes and projects), via Lovable AI.
+10. **Admin AI copilot** — draft roadmaps, find gaps in a learning path, propose article ideas from search demand, plus the article assistant actions (clarity, beginner-friendly, analogy, summary, quiz, related resources, project, tags, SEO, social post, internal links). Never auto-publishes.
+11. **Distribution + digest** — share targets (Instagram, LinkedIn, X, WhatsApp, Telegram, email), generated social cards, quote cards, summaries and carousel content; Daily AI Drop / Weekly Explorer Brief infrastructure with later personalization.
+12. **Community and campus readiness** — user/builder profiles, project submissions, challenge participation, featured builds, comments, community collections, creator contributions; campus communities, ambassadors, local events and leaderboards as an optional extension, never the core identity.
+13. **Global architecture** — countries, currencies, locations, organizations, global vs local opportunities and multi-language support in the schema and UI from the start; India is a launch market, not a hard-coded assumption.
+
+Throughout: SEO metadata and structured data on every content page, sitemap and robots support, loading/empty/error/success states everywhere, accessibility, reduced-motion support, mobile bottom nav plus pan/zoom canvases, lazy loading and code splitting. No button ships that does nothing.
+
 
 ## Technical notes
 
