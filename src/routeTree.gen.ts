@@ -26,6 +26,7 @@ import { Route as SiteProjectsIndexRouteImport } from './routes/_site.projects.i
 import { Route as SiteProjectsSlugRouteImport } from './routes/_site.projects.$slug'
 import { Route as SiteRoadmapsIndexRouteImport } from './routes/_site.roadmaps.index'
 import { Route as SiteRoadmapsSlugRouteImport } from './routes/_site.roadmaps.$slug'
+import { Route as SiteStudioIndexRouteImport } from './routes/_site.studio.index'
 import { Route as SiteLearnPathSlugIndexRouteImport } from './routes/_site.learn.$pathSlug.index'
 import { Route as SiteLearnPathSlugLessonSlugRouteImport } from './routes/_site.learn.$pathSlug.$lessonSlug'
 
@@ -113,6 +114,11 @@ const SiteRoadmapsSlugRoute = SiteRoadmapsSlugRouteImport.update({
   path: '/roadmaps/$slug',
   getParentRoute: () => SiteRoute,
 } as any)
+const SiteStudioIndexRoute = SiteStudioIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SiteStudioRoute,
+} as any)
 const SiteLearnPathSlugIndexRoute = SiteLearnPathSlugIndexRouteImport.update({
   id: '/learn/$pathSlug/',
   path: '/learn/$pathSlug/',
@@ -132,7 +138,7 @@ export interface FileRoutesByFullPath {
   '/opportunities': typeof SiteOpportunitiesRoute
   '/resources': typeof SiteResourcesRoute
   '/search': typeof SiteSearchRoute
-  '/studio': typeof SiteStudioRoute
+  '/studio': typeof SiteStudioRouteWithChildren
   '/articles/$slug': typeof SiteArticlesSlugRoute
   '/careers/$slug': typeof SiteCareersSlugRoute
   '/projects/$slug': typeof SiteProjectsSlugRoute
@@ -142,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/learn/': typeof SiteLearnIndexRoute
   '/projects/': typeof SiteProjectsIndexRoute
   '/roadmaps/': typeof SiteRoadmapsIndexRoute
+  '/studio/': typeof SiteStudioIndexRoute
   '/learn/$pathSlug/$lessonSlug': typeof SiteLearnPathSlugLessonSlugRoute
   '/learn/$pathSlug/': typeof SiteLearnPathSlugIndexRoute
 }
@@ -151,7 +158,6 @@ export interface FileRoutesByTo {
   '/opportunities': typeof SiteOpportunitiesRoute
   '/resources': typeof SiteResourcesRoute
   '/search': typeof SiteSearchRoute
-  '/studio': typeof SiteStudioRoute
   '/': typeof SiteIndexRoute
   '/articles/$slug': typeof SiteArticlesSlugRoute
   '/careers/$slug': typeof SiteCareersSlugRoute
@@ -162,6 +168,7 @@ export interface FileRoutesByTo {
   '/learn': typeof SiteLearnIndexRoute
   '/projects': typeof SiteProjectsIndexRoute
   '/roadmaps': typeof SiteRoadmapsIndexRoute
+  '/studio': typeof SiteStudioIndexRoute
   '/learn/$pathSlug/$lessonSlug': typeof SiteLearnPathSlugLessonSlugRoute
   '/learn/$pathSlug': typeof SiteLearnPathSlugIndexRoute
 }
@@ -173,7 +180,7 @@ export interface FileRoutesById {
   '/_site/opportunities': typeof SiteOpportunitiesRoute
   '/_site/resources': typeof SiteResourcesRoute
   '/_site/search': typeof SiteSearchRoute
-  '/_site/studio': typeof SiteStudioRoute
+  '/_site/studio': typeof SiteStudioRouteWithChildren
   '/_site/': typeof SiteIndexRoute
   '/_site/articles/$slug': typeof SiteArticlesSlugRoute
   '/_site/careers/$slug': typeof SiteCareersSlugRoute
@@ -184,6 +191,7 @@ export interface FileRoutesById {
   '/_site/learn/': typeof SiteLearnIndexRoute
   '/_site/projects/': typeof SiteProjectsIndexRoute
   '/_site/roadmaps/': typeof SiteRoadmapsIndexRoute
+  '/_site/studio/': typeof SiteStudioIndexRoute
   '/_site/learn/$pathSlug/$lessonSlug': typeof SiteLearnPathSlugLessonSlugRoute
   '/_site/learn/$pathSlug/': typeof SiteLearnPathSlugIndexRoute
 }
@@ -206,6 +214,7 @@ export interface FileRouteTypes {
     | '/learn/'
     | '/projects/'
     | '/roadmaps/'
+    | '/studio/'
     | '/learn/$pathSlug/$lessonSlug'
     | '/learn/$pathSlug/'
   fileRoutesByTo: FileRoutesByTo
@@ -215,7 +224,6 @@ export interface FileRouteTypes {
     | '/opportunities'
     | '/resources'
     | '/search'
-    | '/studio'
     | '/'
     | '/articles/$slug'
     | '/careers/$slug'
@@ -226,6 +234,7 @@ export interface FileRouteTypes {
     | '/learn'
     | '/projects'
     | '/roadmaps'
+    | '/studio'
     | '/learn/$pathSlug/$lessonSlug'
     | '/learn/$pathSlug'
   id:
@@ -247,6 +256,7 @@ export interface FileRouteTypes {
     | '/_site/learn/'
     | '/_site/projects/'
     | '/_site/roadmaps/'
+    | '/_site/studio/'
     | '/_site/learn/$pathSlug/$lessonSlug'
     | '/_site/learn/$pathSlug/'
   fileRoutesById: FileRoutesById
@@ -377,6 +387,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteRoadmapsSlugRouteImport
       parentRoute: typeof SiteRoute
     }
+    '/_site/studio/': {
+      id: '/_site/studio/'
+      path: '/'
+      fullPath: '/studio/'
+      preLoaderRoute: typeof SiteStudioIndexRouteImport
+      parentRoute: typeof SiteStudioRoute
+    }
     '/_site/learn/$pathSlug/': {
       id: '/_site/learn/$pathSlug/'
       path: '/learn/$pathSlug'
@@ -394,12 +411,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface SiteStudioRouteChildren {
+  SiteStudioIndexRoute: typeof SiteStudioIndexRoute
+}
+
+const SiteStudioRouteChildren: SiteStudioRouteChildren = {
+  SiteStudioIndexRoute: SiteStudioIndexRoute,
+}
+
+const SiteStudioRouteWithChildren = SiteStudioRoute._addFileChildren(
+  SiteStudioRouteChildren,
+)
+
 interface SiteRouteChildren {
   SiteLibraryRoute: typeof SiteLibraryRoute
   SiteOpportunitiesRoute: typeof SiteOpportunitiesRoute
   SiteResourcesRoute: typeof SiteResourcesRoute
   SiteSearchRoute: typeof SiteSearchRoute
-  SiteStudioRoute: typeof SiteStudioRoute
+  SiteStudioRoute: typeof SiteStudioRouteWithChildren
   SiteIndexRoute: typeof SiteIndexRoute
   SiteArticlesSlugRoute: typeof SiteArticlesSlugRoute
   SiteCareersSlugRoute: typeof SiteCareersSlugRoute
@@ -419,7 +448,7 @@ const SiteRouteChildren: SiteRouteChildren = {
   SiteOpportunitiesRoute: SiteOpportunitiesRoute,
   SiteResourcesRoute: SiteResourcesRoute,
   SiteSearchRoute: SiteSearchRoute,
-  SiteStudioRoute: SiteStudioRoute,
+  SiteStudioRoute: SiteStudioRouteWithChildren,
   SiteIndexRoute: SiteIndexRoute,
   SiteArticlesSlugRoute: SiteArticlesSlugRoute,
   SiteCareersSlugRoute: SiteCareersSlugRoute,
