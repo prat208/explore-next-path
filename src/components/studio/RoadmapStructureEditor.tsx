@@ -6,11 +6,13 @@ import { supabase } from "@/integrations/supabase/client";
 import type { RoadmapEdge, RoadmapNode } from "@/lib/content";
 import { slugify } from "@/lib/studio";
 import { Field, inputClass } from "./fields";
+import { RoadmapCanvas } from "@/components/roadmap/RoadmapCanvas";
 
 export function RoadmapStructureEditor({ roadmapId }: { roadmapId: string }) {
   const [newTitle, setNewTitle] = useState("");
   const [source, setSource] = useState("");
   const [targetNode, setTargetNode] = useState("");
+  const [activeNode, setActiveNode] = useState<string | null>(null);
 
   const nodes = useQuery({
     queryKey: ["studio-roadmap-nodes", roadmapId],
