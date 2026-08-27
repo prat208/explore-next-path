@@ -68,6 +68,8 @@ export function RoadmapStructureEditor({ roadmapId }: { roadmapId: string }) {
         skills: node.skills,
         group_label: node.group_label,
         sort: node.sort,
+        video_url: node.video_url?.trim() ? node.video_url.trim() : null,
+        video_title: node.video_title?.trim() ? node.video_title.trim() : null,
       })
       .eq("id", node.id);
     if (error) toast.error(error.message);
@@ -279,6 +281,21 @@ function NodeCard({
             type="number"
             value={draft.sort}
             onChange={(e) => set({ sort: Number(e.target.value) })}
+            className={inputClass}
+          />
+        </Field>
+        <Field label="YouTube video link" hint="Paste any youtube.com or youtu.be URL" className="sm:col-span-2">
+          <input
+            value={draft.video_url ?? ""}
+            onChange={(e) => set({ video_url: e.target.value })}
+            placeholder="https://www.youtube.com/watch?v=..."
+            className={`${inputClass} font-mono text-[0.82rem]`}
+          />
+        </Field>
+        <Field label="Video label" hint="Optional title shown above the player" className="sm:col-span-2">
+          <input
+            value={draft.video_title ?? ""}
+            onChange={(e) => set({ video_title: e.target.value })}
             className={inputClass}
           />
         </Field>

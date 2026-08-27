@@ -1,3 +1,4 @@
+import { youtubeId } from "@/components/roadmap/NodeVideo";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Check, Maximize2, Minus, Plus } from "lucide-react";
 import type { RoadmapEdge, RoadmapNode } from "@/lib/content";
@@ -322,6 +323,7 @@ export function RoadmapCanvas({
                 <span className={cn("mt-1 block font-mono text-[0.62rem] uppercase tracking-wider", tone.text)}>
                   {node.group_label ?? node.difficulty}
                   {node.estimated_hours ? ` · ${node.estimated_hours}h` : ""}
+                  {youtubeId(node.video_url) ? " · ▶ video" : ""}
                 </span>
               </button>
             </div>

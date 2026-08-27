@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { ArrowRight, Check, Circle } from "lucide-react";
 import { roadmapQuery, type RoadmapNode } from "@/lib/content";
 import { RoadmapCanvas } from "@/components/roadmap/RoadmapCanvas";
+import { NodeVideo } from "@/components/roadmap/NodeVideo";
 import { ContinueExploring } from "@/components/site/ContinueExploring";
 import { SaveButton } from "@/components/site/SaveButton";
 import { Pill } from "@/components/site/bits";
@@ -162,6 +163,7 @@ function RoadmapPage() {
                   </ul>
                 </div>
               )}
+              <NodeVideo url={active.video_url} title={active.video_title} />
               <div className="mt-5">
                 <SaveButton itemType="roadmap_node" itemId={active.id} label="Save this step" />
               </div>

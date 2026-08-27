@@ -875,6 +875,8 @@ export type Database = {
           slug: string
           sort: number
           title: string
+          video_title: string | null
+          video_url: string | null
         }
         Insert: {
           created_at?: string
@@ -890,6 +892,8 @@ export type Database = {
           slug: string
           sort?: number
           title: string
+          video_title?: string | null
+          video_url?: string | null
         }
         Update: {
           created_at?: string
@@ -905,6 +909,8 @@ export type Database = {
           slug?: string
           sort?: number
           title?: string
+          video_title?: string | null
+          video_url?: string | null
         }
         Relationships: [
           {
