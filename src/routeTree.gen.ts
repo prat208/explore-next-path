@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SiteRouteImport } from './routes/_site'
 import { Route as SiteIndexRouteImport } from './routes/_site.index'
 import { Route as SiteArticlesIndexRouteImport } from './routes/_site.articles.index'
+import { Route as SiteArticlesSlugRouteImport } from './routes/_site.articles.$slug'
 
 const SiteRoute = SiteRouteImport.update({
   id: '/_site',
@@ -27,27 +28,40 @@ const SiteArticlesIndexRoute = SiteArticlesIndexRouteImport.update({
   path: '/articles/',
   getParentRoute: () => SiteRoute,
 } as any)
+const SiteArticlesSlugRoute = SiteArticlesSlugRouteImport.update({
+  id: '/articles/$slug',
+  path: '/articles/$slug',
+  getParentRoute: () => SiteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof SiteIndexRoute
+  '/articles/$slug': typeof SiteArticlesSlugRoute
   '/articles/': typeof SiteArticlesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof SiteIndexRoute
+  '/articles/$slug': typeof SiteArticlesSlugRoute
   '/articles': typeof SiteArticlesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_site': typeof SiteRouteWithChildren
   '/_site/': typeof SiteIndexRoute
+  '/_site/articles/$slug': typeof SiteArticlesSlugRoute
   '/_site/articles/': typeof SiteArticlesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/articles/'
+  fullPaths: '/' | '/articles/$slug' | '/articles/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/articles'
-  id: '__root__' | '/_site' | '/_site/' | '/_site/articles/'
+  to: '/' | '/articles/$slug' | '/articles'
+  id:
+    | '__root__'
+    | '/_site'
+    | '/_site/'
+    | '/_site/articles/$slug'
+    | '/_site/articles/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,16 +91,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteArticlesIndexRouteImport
       parentRoute: typeof SiteRoute
     }
+    '/_site/articles/$slug': {
+      id: '/_site/articles/$slug'
+      path: '/articles/$slug'
+      fullPath: '/articles/$slug'
+      preLoaderRoute: typeof SiteArticlesSlugRouteImport
+      parentRoute: typeof SiteRoute
+    }
   }
 }
 
 interface SiteRouteChildren {
   SiteIndexRoute: typeof SiteIndexRoute
+  SiteArticlesSlugRoute: typeof SiteArticlesSlugRoute
   SiteArticlesIndexRoute: typeof SiteArticlesIndexRoute
 }
 
 const SiteRouteChildren: SiteRouteChildren = {
   SiteIndexRoute: SiteIndexRoute,
+  SiteArticlesSlugRoute: SiteArticlesSlugRoute,
   SiteArticlesIndexRoute: SiteArticlesIndexRoute,
 }
 
