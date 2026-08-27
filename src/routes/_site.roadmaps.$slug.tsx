@@ -163,6 +163,7 @@ function RoadmapPage() {
                   </ul>
                 </div>
               )}
+              <NodeVideo url={active.video_url} title={active.video_title} />
               <div className="mt-5">
                 <SaveButton itemType="roadmap_node" itemId={active.id} label="Save this step" />
               </div>
