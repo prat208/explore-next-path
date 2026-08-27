@@ -13,6 +13,7 @@ import { Route as SiteRouteImport } from './routes/_site'
 import { Route as SiteIndexRouteImport } from './routes/_site.index'
 import { Route as SiteArticlesIndexRouteImport } from './routes/_site.articles.index'
 import { Route as SiteArticlesSlugRouteImport } from './routes/_site.articles.$slug'
+import { Route as SiteRoadmapsIndexRouteImport } from './routes/_site.roadmaps.index'
 
 const SiteRoute = SiteRouteImport.update({
   id: '/_site',
@@ -33,16 +34,23 @@ const SiteArticlesSlugRoute = SiteArticlesSlugRouteImport.update({
   path: '/articles/$slug',
   getParentRoute: () => SiteRoute,
 } as any)
+const SiteRoadmapsIndexRoute = SiteRoadmapsIndexRouteImport.update({
+  id: '/roadmaps/',
+  path: '/roadmaps/',
+  getParentRoute: () => SiteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof SiteIndexRoute
   '/articles/$slug': typeof SiteArticlesSlugRoute
   '/articles/': typeof SiteArticlesIndexRoute
+  '/roadmaps/': typeof SiteRoadmapsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof SiteIndexRoute
   '/articles/$slug': typeof SiteArticlesSlugRoute
   '/articles': typeof SiteArticlesIndexRoute
+  '/roadmaps': typeof SiteRoadmapsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -50,18 +58,20 @@ export interface FileRoutesById {
   '/_site/': typeof SiteIndexRoute
   '/_site/articles/$slug': typeof SiteArticlesSlugRoute
   '/_site/articles/': typeof SiteArticlesIndexRoute
+  '/_site/roadmaps/': typeof SiteRoadmapsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/articles/$slug' | '/articles/'
+  fullPaths: '/' | '/articles/$slug' | '/articles/' | '/roadmaps/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/articles/$slug' | '/articles'
+  to: '/' | '/articles/$slug' | '/articles' | '/roadmaps'
   id:
     | '__root__'
     | '/_site'
     | '/_site/'
     | '/_site/articles/$slug'
     | '/_site/articles/'
+    | '/_site/roadmaps/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -98,6 +108,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteArticlesSlugRouteImport
       parentRoute: typeof SiteRoute
     }
+    '/_site/roadmaps/': {
+      id: '/_site/roadmaps/'
+      path: '/roadmaps'
+      fullPath: '/roadmaps/'
+      preLoaderRoute: typeof SiteRoadmapsIndexRouteImport
+      parentRoute: typeof SiteRoute
+    }
   }
 }
 
@@ -105,12 +122,14 @@ interface SiteRouteChildren {
   SiteIndexRoute: typeof SiteIndexRoute
   SiteArticlesSlugRoute: typeof SiteArticlesSlugRoute
   SiteArticlesIndexRoute: typeof SiteArticlesIndexRoute
+  SiteRoadmapsIndexRoute: typeof SiteRoadmapsIndexRoute
 }
 
 const SiteRouteChildren: SiteRouteChildren = {
   SiteIndexRoute: SiteIndexRoute,
   SiteArticlesSlugRoute: SiteArticlesSlugRoute,
   SiteArticlesIndexRoute: SiteArticlesIndexRoute,
+  SiteRoadmapsIndexRoute: SiteRoadmapsIndexRoute,
 }
 
 const SiteRouteWithChildren = SiteRoute._addFileChildren(SiteRouteChildren)
