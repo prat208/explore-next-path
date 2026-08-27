@@ -53,7 +53,7 @@ export function ContinueExploring({
                 {group.map((item) => (
                   <Link
                     key={`${item.type}-${item.id}`}
-                    to={item.href}
+                    to={item.href as never}
                     className="hover-lift focus-ring group rounded-xl border border-border bg-card p-4"
                   >
                     <div className="flex items-center justify-between gap-2">
