@@ -284,6 +284,21 @@ function NodeCard({
             className={inputClass}
           />
         </Field>
+        <Field label="YouTube video link" hint="Paste any youtube.com or youtu.be URL" className="sm:col-span-2">
+          <input
+            value={draft.video_url ?? ""}
+            onChange={(e) => set({ video_url: e.target.value })}
+            placeholder="https://www.youtube.com/watch?v=..."
+            className={`${inputClass} font-mono text-[0.82rem]`}
+          />
+        </Field>
+        <Field label="Video label" hint="Optional title shown above the player" className="sm:col-span-2">
+          <input
+            value={draft.video_title ?? ""}
+            onChange={(e) => set({ video_title: e.target.value })}
+            className={inputClass}
+          />
+        </Field>
         <Field label="Skills" hint="One per line" className="sm:col-span-2">
           <textarea
             rows={3}
