@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SiteRouteImport } from './routes/_site'
 import { Route as SiteIndexRouteImport } from './routes/_site.index'
+import { Route as SiteArticlesIndexRouteImport } from './routes/_site.articles.index'
 
 const SiteRoute = SiteRouteImport.update({
   id: '/_site',
@@ -21,24 +22,32 @@ const SiteIndexRoute = SiteIndexRouteImport.update({
   path: '/',
   getParentRoute: () => SiteRoute,
 } as any)
+const SiteArticlesIndexRoute = SiteArticlesIndexRouteImport.update({
+  id: '/articles/',
+  path: '/articles/',
+  getParentRoute: () => SiteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof SiteIndexRoute
+  '/articles/': typeof SiteArticlesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof SiteIndexRoute
+  '/articles': typeof SiteArticlesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_site': typeof SiteRouteWithChildren
   '/_site/': typeof SiteIndexRoute
+  '/_site/articles/': typeof SiteArticlesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/articles/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/_site' | '/_site/'
+  to: '/' | '/articles'
+  id: '__root__' | '/_site' | '/_site/' | '/_site/articles/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -61,15 +70,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteIndexRouteImport
       parentRoute: typeof SiteRoute
     }
+    '/_site/articles/': {
+      id: '/_site/articles/'
+      path: '/articles'
+      fullPath: '/articles/'
+      preLoaderRoute: typeof SiteArticlesIndexRouteImport
+      parentRoute: typeof SiteRoute
+    }
   }
 }
 
 interface SiteRouteChildren {
   SiteIndexRoute: typeof SiteIndexRoute
+  SiteArticlesIndexRoute: typeof SiteArticlesIndexRoute
 }
 
 const SiteRouteChildren: SiteRouteChildren = {
   SiteIndexRoute: SiteIndexRoute,
+  SiteArticlesIndexRoute: SiteArticlesIndexRoute,
 }
 
 const SiteRouteWithChildren = SiteRoute._addFileChildren(SiteRouteChildren)
