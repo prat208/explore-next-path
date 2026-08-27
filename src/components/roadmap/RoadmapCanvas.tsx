@@ -80,24 +80,54 @@ export function RoadmapCanvas({
     | null
   >(null);
 
-  // Layout: use stored positions, falling back to an auto grid by group.
+  /**
+   * Layout: stored pixel positions win when an editor has arranged the diagram.
+   * Otherwise nodes are auto-placed as a top-down tree using the edge graph,
+   * so a roadmap reads as a flow chart instead of a stack of columns.
+   */
   const layout = useMemo(() => {
-    const groups = new Map<string, RoadmapNode[]>();
-    for (const node of nodes) {
-      const key = node.group_label ?? "Core";
-      groups.set(key, [...(groups.get(key) ?? []), node]);
-    }
+    const usesPixels = nodes.some((n) => Math.abs(n.position_x) > 40 || Math.abs(n.position_y) > 40);
     const map: Record<string, Point> = {};
-    [...groups.values()].forEach((groupNodes, column) => {
-      groupNodes.forEach((node, row) => {
-        const stored = node.position_x || node.position_y;
-        map[node.id] = stored
-          ? { x: node.position_x, y: node.position_y }
-          : { x: column * (NODE_W + 96), y: row * (NODE_H + 56) };
+    if (usesPixels) {
+      nodes.forEach((node, i) => {
+        map[node.id] = { x: node.position_x, y: node.position_y || i * (NODE_H + 56) };
       });
-    });
+      return map;
+    }
+
+    // Depth = longest chain of incoming edges (falls back to sort order for orphans).
+    const depth = new Map<string, number>();
+    const incoming = new Map<string, string[]>();
+    for (const edge of edges) {
+      incoming.set(edge.target_node_id, [...(incoming.get(edge.target_node_id) ?? []), edge.source_node_id]);
+    }
+    const resolve = (id: string, seen: Set<string>): number => {
+      if (depth.has(id)) return depth.get(id)!;
+      if (seen.has(id)) return 0;
+      seen.add(id);
+      const parents = incoming.get(id) ?? [];
+      const value = parents.length ? Math.max(...parents.map((p) => resolve(p, seen) + 1)) : 0;
+      depth.set(id, value);
+      return value;
+    };
+    for (const node of nodes) resolve(node.id, new Set());
+
+    const rows = new Map<number, RoadmapNode[]>();
+    for (const node of [...nodes].sort((a, b) => a.sort - b.sort)) {
+      const level = depth.get(node.id) ?? 0;
+      rows.set(level, [...(rows.get(level) ?? []), node]);
+    }
+    const widest = Math.max(1, ...[...rows.values()].map((r) => r.length));
+    const stepX = NODE_W + 72;
+    for (const [level, rowNodes] of rows) {
+      const rowWidth = rowNodes.length * stepX;
+      const startX = (widest * stepX - rowWidth) / 2;
+      rowNodes.forEach((node, i) => {
+        map[node.id] = { x: Math.round(startX + i * stepX), y: level * (NODE_H + 90) };
+      });
+    }
     return map;
-  }, [nodes]);
+  }, [nodes, edges]);
 
   const posOf = useCallback((id: string) => positions[id] ?? layout[id] ?? { x: 0, y: 0 }, [positions, layout]);
 
