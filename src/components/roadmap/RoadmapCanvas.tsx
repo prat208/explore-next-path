@@ -322,6 +322,7 @@ export function RoadmapCanvas({
                 <span className={cn("mt-1 block font-mono text-[0.62rem] uppercase tracking-wider", tone.text)}>
                   {node.group_label ?? node.difficulty}
                   {node.estimated_hours ? ` · ${node.estimated_hours}h` : ""}
+                  {youtubeId(node.video_url) ? " · ▶ video" : ""}
                 </span>
               </button>
             </div>
