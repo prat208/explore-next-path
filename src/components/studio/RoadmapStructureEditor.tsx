@@ -6,11 +6,13 @@ import { supabase } from "@/integrations/supabase/client";
 import type { RoadmapEdge, RoadmapNode } from "@/lib/content";
 import { slugify } from "@/lib/studio";
 import { Field, inputClass } from "./fields";
+import { RoadmapCanvas } from "@/components/roadmap/RoadmapCanvas";
 
 export function RoadmapStructureEditor({ roadmapId }: { roadmapId: string }) {
   const [newTitle, setNewTitle] = useState("");
   const [source, setSource] = useState("");
   const [targetNode, setTargetNode] = useState("");
+  const [activeNode, setActiveNode] = useState<string | null>(null);
 
   const nodes = useQuery({
     queryKey: ["studio-roadmap-nodes", roadmapId],
@@ -100,11 +102,36 @@ export function RoadmapStructureEditor({ roadmapId }: { roadmapId: string }) {
     }
   }
 
+  async function moveNode(id: string, x: number, y: number) {
+    const { error } = await supabase.from("roadmap_nodes").update({ position_x: x, position_y: y }).eq("id", id);
+    if (error) toast.error(error.message);
+  }
+
   const list = nodes.data ?? [];
   const nameOf = (id: string) => list.find((n) => n.id === id)?.title ?? id;
 
   return (
     <div className="space-y-6">
+      <section className="rounded-xl border border-border bg-card">
+        <header className="border-b border-border px-5 py-4">
+          <h2 className="font-display text-lg font-semibold text-foreground">Diagram layout</h2>
+          <p className="text-xs text-muted-foreground">
+            Drag each step to arrange the clickable diagram readers see. Positions save automatically.
+          </p>
+        </header>
+        <div className="px-5 py-5">
+          <RoadmapCanvas
+            nodes={list}
+            edges={edges.data ?? []}
+            selectedId={activeNode}
+            onSelect={(node) => setActiveNode(node.id)}
+            editable
+            onMoveNode={(id, x, y) => void moveNode(id, x, y)}
+            height={480}
+          />
+        </div>
+      </section>
+
       <section className="rounded-xl border border-border bg-card">
         <header className="border-b border-border px-5 py-4">
           <h2 className="font-display text-lg font-semibold text-foreground">Roadmap steps</h2>

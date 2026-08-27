@@ -3,6 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { ArrowRight, Check, Circle } from "lucide-react";
 import { roadmapQuery, type RoadmapNode } from "@/lib/content";
+import { RoadmapCanvas } from "@/components/roadmap/RoadmapCanvas";
 import { ContinueExploring } from "@/components/site/ContinueExploring";
 import { SaveButton } from "@/components/site/SaveButton";
 import { Pill } from "@/components/site/bits";
@@ -89,67 +90,33 @@ function RoadmapPage() {
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1.5fr_1fr]">
-        <div className="space-y-8">
-          {groups.map(([group, groupNodes], gi) => (
-            <section key={group}>
-              <div className="flex items-center gap-3">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/15 font-mono text-xs font-semibold text-primary">
-                  {gi + 1}
-                </span>
-                <h2 className="font-display text-lg font-semibold text-foreground">{group}</h2>
-              </div>
-              <div className="mt-3 grid gap-2 border-l border-border pl-6">
-                {groupNodes.map((node) => {
-                  const isDone = done.has(node.id);
-                  const isActive = active?.id === node.id;
-                  return (
-                    <button
-                      key={node.id}
-                      type="button"
-                      onClick={() => setSelected(node)}
-                      className={cn(
-                        "focus-ring flex items-start gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
-                        isActive ? "border-primary/60 bg-primary/[0.07]" : "border-border bg-card hover:border-border-strong",
-                      )}
-                    >
-                      <span
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setDone((prev) => {
-                            const next = new Set(prev);
-                            if (next.has(node.id)) next.delete(node.id);
-                            else next.add(node.id);
-                            return next;
-                          });
-                        }}
-                        role="checkbox"
-                        aria-checked={isDone}
-                        aria-label={`Mark ${node.title} complete`}
-                        className={cn(
-                          "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border",
-                          isDone ? "border-success bg-success text-success-foreground" : "border-border text-transparent",
-                        )}
-                      >
-                        {isDone ? <Check className="h-3 w-3" /> : <Circle className="h-2 w-2" />}
-                      </span>
-                      <span className="min-w-0">
-                        <span className="block font-display text-[0.975rem] font-semibold text-foreground">
-                          {node.title}
-                        </span>
-                        {node.description && (
-                          <span className="mt-0.5 block line-clamp-2 text-sm text-muted-foreground">
-                            {node.description}
-                          </span>
-                        )}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
-          ))}
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1.6fr_1fr]">
+        <div className="space-y-6">
+          <RoadmapCanvas
+            nodes={nodes}
+            edges={edges}
+            selectedId={active?.id ?? null}
+            doneIds={done}
+            onSelect={setSelected}
+            onToggleDone={(node) =>
+              setDone((prev) => {
+                const next = new Set(prev);
+                if (next.has(node.id)) next.delete(node.id);
+                else next.add(node.id);
+                return next;
+              })
+            }
+            height={620}
+          />
+          <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
+            {groups.map(([group, groupNodes]) => (
+              <span key={group} className="font-mono uppercase tracking-wider">
+                {group} · {groupNodes.length}
+              </span>
+            ))}
+          </div>
         </div>
+
 
         <aside className="lg:sticky lg:top-24 lg:self-start">
           {active && (

@@ -200,6 +200,12 @@
   background-size: 64px 64px;
 }
 
+/* Dotted canvas backdrop for the interactive roadmap diagram. */
+@utility roadmap-grid {
+  background-image: radial-gradient(oklch(1 0 0 / 9%) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
 @utility paper-surface {
   background: var(--color-paper);
   color: var(--color-paper-foreground);
