@@ -68,6 +68,8 @@ export function RoadmapStructureEditor({ roadmapId }: { roadmapId: string }) {
         skills: node.skills,
         group_label: node.group_label,
         sort: node.sort,
+        video_url: node.video_url?.trim() ? node.video_url.trim() : null,
+        video_title: node.video_title?.trim() ? node.video_title.trim() : null,
       })
       .eq("id", node.id);
     if (error) toast.error(error.message);
