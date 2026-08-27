@@ -6,7 +6,7 @@ import { ContinueExploring } from "@/components/site/ContinueExploring";
 import { SaveButton } from "@/components/site/SaveButton";
 import { Pill } from "@/components/site/bits";
 
-export const Route = createFileRoute("/_site/projects/")({
+export const Route = createFileRoute("/_site/projects/$slug")({
   loader: async ({ context, params }) => {
     const project = await context.queryClient.ensureQueryData(projectQuery(params.slug));
     if (!project) throw notFound();
