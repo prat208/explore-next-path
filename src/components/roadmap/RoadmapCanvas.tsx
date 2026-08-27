@@ -1,3 +1,4 @@
+import { youtubeId } from "@/components/roadmap/NodeVideo";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Check, Maximize2, Minus, Plus } from "lucide-react";
 import type { RoadmapEdge, RoadmapNode } from "@/lib/content";
