@@ -4,8 +4,9 @@ import { ArrowUpRight } from "lucide-react";
 import { RELATION_SECTIONS, relatedQuery, type RelatedItem } from "@/lib/content";
 import { Pill } from "./bits";
 
-const ORDER = RELATION_SECTIONS.map((r) => r.relation);
-const TITLES = new Map(RELATION_SECTIONS.map((r) => [r.relation, r.title]));
+const ORDER: string[] = RELATION_SECTIONS.map((r) => r.relation);
+const TITLES = new Map<string, string>(RELATION_SECTIONS.map((r) => [r.relation, r.title]));
+
 
 /**
  * The knowledge-graph footer that every content page ends with:
