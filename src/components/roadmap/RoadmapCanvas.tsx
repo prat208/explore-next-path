@@ -10,7 +10,16 @@ const MAX_ZOOM = 2.2;
 
 type Point = { x: number; y: number };
 
-const TONES: Record<string, { border: string; text: string; bg: string; stroke: string }> = {
+type Tone = { border: string; text: string; bg: string; stroke: string };
+
+const BEGINNER_TONE: Tone = {
+  border: "border-secondary/60",
+  text: "text-secondary",
+  bg: "bg-secondary/[0.08]",
+  stroke: "hsl(var(--secondary))",
+};
+
+const TONES: Record<string, Tone | undefined> = {
   beginner: {
     border: "border-secondary/60",
     text: "text-secondary",
@@ -31,7 +40,7 @@ const TONES: Record<string, { border: string; text: string; bg: string; stroke: 
   },
 };
 
-const toneFor = (node: RoadmapNode) => TONES[node.difficulty] ?? TONES.beginner;
+const toneFor = (node: RoadmapNode): Tone => TONES[node.difficulty] ?? BEGINNER_TONE;
 
 /**
  * Interactive node/edge diagram for a roadmap.
