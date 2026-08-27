@@ -30,6 +30,7 @@ import { Route as SiteStudioIndexRouteImport } from './routes/_site.studio.index
 import { Route as SiteLearnPathSlugIndexRouteImport } from './routes/_site.learn.$pathSlug.index'
 import { Route as SiteLearnPathSlugLessonSlugRouteImport } from './routes/_site.learn.$pathSlug.$lessonSlug'
 import { Route as SiteStudioCollectionIndexRouteImport } from './routes/_site.studio.$collection.index'
+import { Route as SiteStudioCollectionIdRouteImport } from './routes/_site.studio.$collection.$id'
 
 const SiteRoute = SiteRouteImport.update({
   id: '/_site',
@@ -137,6 +138,11 @@ const SiteStudioCollectionIndexRoute =
     path: '/$collection/',
     getParentRoute: () => SiteStudioRoute,
   } as any)
+const SiteStudioCollectionIdRoute = SiteStudioCollectionIdRouteImport.update({
+  id: '/$collection/$id',
+  path: '/$collection/$id',
+  getParentRoute: () => SiteStudioRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof SiteIndexRoute
@@ -157,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/roadmaps/': typeof SiteRoadmapsIndexRoute
   '/studio/': typeof SiteStudioIndexRoute
   '/learn/$pathSlug/$lessonSlug': typeof SiteLearnPathSlugLessonSlugRoute
+  '/studio/$collection/$id': typeof SiteStudioCollectionIdRoute
   '/learn/$pathSlug/': typeof SiteLearnPathSlugIndexRoute
   '/studio/$collection/': typeof SiteStudioCollectionIndexRoute
 }
@@ -178,6 +185,7 @@ export interface FileRoutesByTo {
   '/roadmaps': typeof SiteRoadmapsIndexRoute
   '/studio': typeof SiteStudioIndexRoute
   '/learn/$pathSlug/$lessonSlug': typeof SiteLearnPathSlugLessonSlugRoute
+  '/studio/$collection/$id': typeof SiteStudioCollectionIdRoute
   '/learn/$pathSlug': typeof SiteLearnPathSlugIndexRoute
   '/studio/$collection': typeof SiteStudioCollectionIndexRoute
 }
@@ -202,6 +210,7 @@ export interface FileRoutesById {
   '/_site/roadmaps/': typeof SiteRoadmapsIndexRoute
   '/_site/studio/': typeof SiteStudioIndexRoute
   '/_site/learn/$pathSlug/$lessonSlug': typeof SiteLearnPathSlugLessonSlugRoute
+  '/_site/studio/$collection/$id': typeof SiteStudioCollectionIdRoute
   '/_site/learn/$pathSlug/': typeof SiteLearnPathSlugIndexRoute
   '/_site/studio/$collection/': typeof SiteStudioCollectionIndexRoute
 }
@@ -226,6 +235,7 @@ export interface FileRouteTypes {
     | '/roadmaps/'
     | '/studio/'
     | '/learn/$pathSlug/$lessonSlug'
+    | '/studio/$collection/$id'
     | '/learn/$pathSlug/'
     | '/studio/$collection/'
   fileRoutesByTo: FileRoutesByTo
@@ -247,6 +257,7 @@ export interface FileRouteTypes {
     | '/roadmaps'
     | '/studio'
     | '/learn/$pathSlug/$lessonSlug'
+    | '/studio/$collection/$id'
     | '/learn/$pathSlug'
     | '/studio/$collection'
   id:
@@ -270,6 +281,7 @@ export interface FileRouteTypes {
     | '/_site/roadmaps/'
     | '/_site/studio/'
     | '/_site/learn/$pathSlug/$lessonSlug'
+    | '/_site/studio/$collection/$id'
     | '/_site/learn/$pathSlug/'
     | '/_site/studio/$collection/'
   fileRoutesById: FileRoutesById
@@ -428,16 +440,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteStudioCollectionIndexRouteImport
       parentRoute: typeof SiteStudioRoute
     }
+    '/_site/studio/$collection/$id': {
+      id: '/_site/studio/$collection/$id'
+      path: '/$collection/$id'
+      fullPath: '/studio/$collection/$id'
+      preLoaderRoute: typeof SiteStudioCollectionIdRouteImport
+      parentRoute: typeof SiteStudioRoute
+    }
   }
 }
 
 interface SiteStudioRouteChildren {
   SiteStudioIndexRoute: typeof SiteStudioIndexRoute
+  SiteStudioCollectionIdRoute: typeof SiteStudioCollectionIdRoute
   SiteStudioCollectionIndexRoute: typeof SiteStudioCollectionIndexRoute
 }
 
 const SiteStudioRouteChildren: SiteStudioRouteChildren = {
   SiteStudioIndexRoute: SiteStudioIndexRoute,
+  SiteStudioCollectionIdRoute: SiteStudioCollectionIdRoute,
   SiteStudioCollectionIndexRoute: SiteStudioCollectionIndexRoute,
 }
 
