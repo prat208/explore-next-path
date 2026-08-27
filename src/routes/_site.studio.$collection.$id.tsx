@@ -106,7 +106,7 @@ function RecordEditor() {
         <div className="flex items-center gap-2">
           {!isNew && collection.viewTo && draft['slug'] ? (
             <a
-              href={`${collection.viewTo}/${String(draft['slug'])}`}
+              href={collection.viewTo.replace(/\/\$[A-Za-z]+$/, `/${String(draft['slug'])}`)}
               target="_blank"
               rel="noreferrer"
               className="focus-ring inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-semibold text-foreground hover:border-primary/50"
