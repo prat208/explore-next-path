@@ -16,6 +16,7 @@ import { Route as SiteArticlesSlugRouteImport } from './routes/_site.articles.$s
 import { Route as SiteLearnIndexRouteImport } from './routes/_site.learn.index'
 import { Route as SiteRoadmapsIndexRouteImport } from './routes/_site.roadmaps.index'
 import { Route as SiteRoadmapsSlugRouteImport } from './routes/_site.roadmaps.$slug'
+import { Route as SiteLearnPathSlugIndexRouteImport } from './routes/_site.learn.$pathSlug.index'
 
 const SiteRoute = SiteRouteImport.update({
   id: '/_site',
@@ -51,6 +52,11 @@ const SiteRoadmapsSlugRoute = SiteRoadmapsSlugRouteImport.update({
   path: '/roadmaps/$slug',
   getParentRoute: () => SiteRoute,
 } as any)
+const SiteLearnPathSlugIndexRoute = SiteLearnPathSlugIndexRouteImport.update({
+  id: '/learn/$pathSlug/',
+  path: '/learn/$pathSlug/',
+  getParentRoute: () => SiteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof SiteIndexRoute
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/articles/': typeof SiteArticlesIndexRoute
   '/learn/': typeof SiteLearnIndexRoute
   '/roadmaps/': typeof SiteRoadmapsIndexRoute
+  '/learn/$pathSlug/': typeof SiteLearnPathSlugIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof SiteIndexRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/articles': typeof SiteArticlesIndexRoute
   '/learn': typeof SiteLearnIndexRoute
   '/roadmaps': typeof SiteRoadmapsIndexRoute
+  '/learn/$pathSlug': typeof SiteLearnPathSlugIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/_site/articles/': typeof SiteArticlesIndexRoute
   '/_site/learn/': typeof SiteLearnIndexRoute
   '/_site/roadmaps/': typeof SiteRoadmapsIndexRoute
+  '/_site/learn/$pathSlug/': typeof SiteLearnPathSlugIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/articles/'
     | '/learn/'
     | '/roadmaps/'
+    | '/learn/$pathSlug/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
     | '/articles'
     | '/learn'
     | '/roadmaps'
+    | '/learn/$pathSlug'
   id:
     | '__root__'
     | '/_site'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '/_site/articles/'
     | '/_site/learn/'
     | '/_site/roadmaps/'
+    | '/_site/learn/$pathSlug/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -161,6 +173,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteRoadmapsSlugRouteImport
       parentRoute: typeof SiteRoute
     }
+    '/_site/learn/$pathSlug/': {
+      id: '/_site/learn/$pathSlug/'
+      path: '/learn/$pathSlug'
+      fullPath: '/learn/$pathSlug/'
+      preLoaderRoute: typeof SiteLearnPathSlugIndexRouteImport
+      parentRoute: typeof SiteRoute
+    }
   }
 }
 
@@ -171,6 +190,7 @@ interface SiteRouteChildren {
   SiteArticlesIndexRoute: typeof SiteArticlesIndexRoute
   SiteLearnIndexRoute: typeof SiteLearnIndexRoute
   SiteRoadmapsIndexRoute: typeof SiteRoadmapsIndexRoute
+  SiteLearnPathSlugIndexRoute: typeof SiteLearnPathSlugIndexRoute
 }
 
 const SiteRouteChildren: SiteRouteChildren = {
@@ -180,6 +200,7 @@ const SiteRouteChildren: SiteRouteChildren = {
   SiteArticlesIndexRoute: SiteArticlesIndexRoute,
   SiteLearnIndexRoute: SiteLearnIndexRoute,
   SiteRoadmapsIndexRoute: SiteRoadmapsIndexRoute,
+  SiteLearnPathSlugIndexRoute: SiteLearnPathSlugIndexRoute,
 }
 
 const SiteRouteWithChildren = SiteRoute._addFileChildren(SiteRouteChildren)
