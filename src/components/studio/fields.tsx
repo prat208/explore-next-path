@@ -110,7 +110,7 @@ export function FieldInput({
               rows={field.rows ?? 10}
               value={typeof value === "string" ? value : ""}
               onChange={(e) => onChange(e.target.value)}
-              placeholder="<div class=\"tree\">…</div>"
+              placeholder={'<div class="tree">…</div>'}
               className={cn(inputClass, "resize-y font-mono text-[0.78rem] leading-relaxed")}
             />
           </div>
