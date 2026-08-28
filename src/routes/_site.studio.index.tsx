@@ -1,56 +1,129 @@
-import { useEffect, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { FolderUp, Trash2, UploadCloud } from "lucide-react";
+import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ExternalLink, FolderPlus, FolderUp, Trash2, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 import { MediaBlock } from "@/components/blocks/MediaBlock";
-import { supabase } from "@/integrations/supabase/client";
 import { bundleWebFiles, detectKind, prettySize, uploadToLibrary } from "@/lib/upload";
+import {
+  SECTION_CATEGORIES,
+  addFile,
+  categoryLabel,
+  createSection,
+  deleteFile,
+  deleteSection,
+  sectionsQuery,
+} from "@/lib/sections";
 
 export const Route = createFileRoute("/_site/studio/")({
   component: UploadsPage,
 });
 
-type LibraryFile = {
-  path: string;
-  name: string;
-  url: string;
-  size: number;
-};
+function UploadsPage() {
+  const qc = useQueryClient();
+  const sections = useQuery(sectionsQuery);
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState<string>("roadmap");
+  const [subtitle, setSubtitle] = useState("");
+  const [creating, setCreating] = useState(false);
 
-const FOLDER = "library";
-const TEN_YEARS = 60 * 60 * 24 * 365 * 10;
+  const refresh = () => void qc.invalidateQueries({ queryKey: ["upload-sections"] });
 
-async function loadFiles(): Promise<LibraryFile[]> {
-  const { data, error } = await supabase.storage
-    .from("uploads")
-    .list(FOLDER, { limit: 200, sortBy: { column: "created_at", order: "desc" } });
-  if (error) throw new Error(error.message);
-  const entries = (data ?? []).filter((item) => item.id);
-  if (entries.length === 0) return [];
-  const paths = entries.map((item) => `${FOLDER}/${item.name}`);
-  const { data: signed } = await supabase.storage.from("uploads").createSignedUrls(paths, TEN_YEARS);
-  return entries.map((item, index) => ({
-    path: `${FOLDER}/${item.name}`,
-    name: item.name.replace(/^\d+-[a-z0-9]{2,6}-/, ""),
-    url: signed?.[index]?.signedUrl ?? "",
-    size: Number((item.metadata as { size?: number } | null)?.size ?? 0),
-  }));
+  async function makeSection() {
+    if (!title.trim()) {
+      toast.error("Give the section a name, e.g. “AI Engineer Roadmap”");
+      return;
+    }
+    setCreating(true);
+    try {
+      await createSection({ title: title.trim(), category, subtitle: subtitle.trim() });
+      setTitle("");
+      setSubtitle("");
+      toast.success("Section created — now drop its files in");
+      refresh();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not create section");
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  return (
+    <div className="space-y-10">
+      <header>
+        <p className="eyebrow text-primary">Explorer Studio</p>
+        <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-foreground">
+          Sections &amp; uploads
+        </h1>
+        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+          Create a named section — “AI Engineer Roadmap”, “RAG Deep Dive”, “Python Field Manual” — then upload its files
+          into it. Everything you drop appears below exactly as a learner sees it, and each section gets its own public
+          page.
+        </p>
+      </header>
+
+      <section className="rounded-3xl border border-border bg-card p-5 card-soft">
+        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-foreground">
+          <FolderPlus className="h-4 w-4 text-primary" /> New section
+        </h2>
+        <div className="mt-4 grid gap-3 sm:grid-cols-[1.4fr_1fr_auto]">
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Section name — e.g. AI Engineer Roadmap"
+            className="focus-ring rounded-xl border border-border bg-background px-3 py-2.5 text-sm"
+          />
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="focus-ring rounded-xl border border-border bg-background px-3 py-2.5 text-sm"
+          >
+            {SECTION_CATEGORIES.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            disabled={creating}
+            onClick={() => void makeSection()}
+            className="focus-ring rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary-deep disabled:opacity-60"
+          >
+            {creating ? "Creating…" : "Create section"}
+          </button>
+        </div>
+        <input
+          value={subtitle}
+          onChange={(e) => setSubtitle(e.target.value)}
+          placeholder="One line for learners (optional) — what this section helps them do"
+          className="focus-ring mt-3 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm"
+        />
+      </section>
+
+      {sections.isLoading ? (
+        <p className="text-sm text-muted-foreground">Loading your sections…</p>
+      ) : (sections.data ?? []).length === 0 ? (
+        <p className="text-sm text-muted-foreground">No sections yet — create one above.</p>
+      ) : (
+        <div className="space-y-12">
+          {(sections.data ?? []).map((section) => (
+            <SectionPanel
+              key={section.id}
+              section={section}
+              onChanged={refresh}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
-function UploadsPage() {
-  const [files, setFiles] = useState<LibraryFile[]>([]);
-  const [loading, setLoading] = useState(true);
+type SectionWithFiles = NonNullable<ReturnType<typeof useQuery<Awaited<ReturnType<typeof sectionsQuery.queryFn>>>>["data"]>[number];
+
+function SectionPanel({ section, onChanged }: { section: SectionWithFiles; onChanged: () => void }) {
   const [busy, setBusy] = useState(false);
-
-  const refresh = () => {
-    setLoading(true);
-    loadFiles()
-      .then(setFiles)
-      .catch((error: unknown) => toast.error(error instanceof Error ? error.message : "Could not load files"))
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(refresh, []);
 
   async function upload(list: FileList | null) {
     if (!list || list.length === 0) return;
@@ -59,17 +132,24 @@ function UploadsPage() {
       const picked = Array.from(list);
       const toUpload = await bundleWebFiles(picked);
       const bundled = picked.length > toUpload.length;
+      let order = section.files.length;
       for (const file of toUpload) {
-        await uploadToLibrary(file, FOLDER);
+        const uploaded = await uploadToLibrary(file, `library/${section.slug}`);
+        await addFile(section.id, {
+          title: uploaded.name,
+          url: uploaded.url,
+          path: uploaded.path,
+          mime: uploaded.mime,
+          size: uploaded.size,
+          sort_order: order++,
+        });
       }
       toast.success(
         bundled
           ? `Bundled ${picked.length} files into one interactive page`
-          : toUpload.length === 1
-            ? "File uploaded"
-            : `${toUpload.length} files uploaded`,
+          : `Added to “${section.title}”`,
       );
-      refresh();
+      onChanged();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Upload failed");
     } finally {
@@ -77,25 +157,41 @@ function UploadsPage() {
     }
   }
 
-  async function remove(path: string) {
-    const { error } = await supabase.storage.from("uploads").remove([path]);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    setFiles((current) => current.filter((file) => file.path !== path));
-  }
-
   return (
-    <div className="space-y-8">
-      <header>
-        <p className="eyebrow text-primary">Explorer Studio</p>
-        <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-foreground">Uploads</h1>
-        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Drop any file — video, PDF, image, audio, notebook, code, interactive HTML. Below each upload you see exactly
-          what a learner sees.
-        </p>
-      </header>
+    <section className="rounded-3xl border border-border bg-card p-5 card-soft">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="eyebrow text-primary">{categoryLabel(section.category)}</p>
+          <h2 className="mt-1 font-display text-2xl font-bold text-foreground">{section.title}</h2>
+          {section.subtitle && <p className="mt-1 text-sm text-muted-foreground">{section.subtitle}</p>}
+          <p className="mt-1 font-mono text-[0.7rem] uppercase tracking-[0.12em] text-muted-foreground">
+            {section.files.length} file{section.files.length === 1 ? "" : "s"}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/files/$slug"
+            params={{ slug: section.slug }}
+            target="_blank"
+            className="focus-ring inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-semibold text-foreground hover:border-primary/50"
+          >
+            Learner view <ExternalLink className="h-3.5 w-3.5" />
+          </Link>
+          <button
+            type="button"
+            onClick={() => {
+              void deleteSection(section.id)
+                .then(onChanged)
+                .catch((error: unknown) =>
+                  toast.error(error instanceof Error ? error.message : "Could not delete section"),
+                );
+            }}
+            className="focus-ring inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-semibold text-muted-foreground hover:border-destructive/50 hover:text-destructive"
+          >
+            <Trash2 className="h-3.5 w-3.5" /> Delete section
+          </button>
+        </div>
+      </div>
 
       <div
         onDragOver={(event) => event.preventDefault()}
@@ -103,17 +199,17 @@ function UploadsPage() {
           event.preventDefault();
           void upload(event.dataTransfer.files);
         }}
-        className="rounded-3xl border border-dashed border-primary/40 bg-primary/[0.04] px-6 py-10 text-center"
+        className="mt-5 rounded-2xl border border-dashed border-primary/40 bg-primary/[0.04] px-5 py-7 text-center"
       >
         <div className="flex flex-wrap items-center justify-center gap-3">
-          <label className="focus-within:ring-primary/40 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground">
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground">
             <UploadCloud className="h-4 w-4" />
-            {busy ? "Uploading…" : "Choose files"}
+            {busy ? "Uploading…" : "Add files to this section"}
             <input type="file" multiple className="sr-only" disabled={busy} onChange={(e) => void upload(e.target.files)} />
           </label>
           <label className="focus-ring inline-flex cursor-pointer items-center gap-2 rounded-xl border border-border bg-background px-5 py-3 text-sm font-semibold text-foreground hover:bg-muted">
             <FolderUp className="h-4 w-4" />
-            Choose a whole folder
+            Whole folder
             <input
               type="file"
               multiple
@@ -127,40 +223,50 @@ function UploadsPage() {
           </label>
         </div>
         <p className="mt-3 text-xs text-muted-foreground">
-          or drag and drop here. Uploading an <span className="font-mono">index.html</span> together with its{" "}
-          <span className="font-mono">style.css</span> / <span className="font-mono">app.js</span> (or the whole folder)
-          merges them into one self-contained interactive page — that&rsquo;s why a lone HTML file looks unstyled.
+          Video, PDF, audio, image, notebook, code, zip or an interactive <span className="font-mono">index.html</span>{" "}
+          with its CSS/JS (they get merged into one self-contained page).
         </p>
       </div>
 
-      {loading ? (
-        <p className="text-sm text-muted-foreground">Loading your files…</p>
-      ) : files.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Nothing uploaded yet.</p>
-      ) : (
-        <div className="space-y-10">
-          {files.map((file) => (
-            <section key={file.path}>
+      {section.files.length > 0 && (
+        <div className="mt-8 space-y-10">
+          {section.files.map((file) => (
+            <div key={file.id}>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="truncate font-display text-base font-semibold text-foreground">{file.name}</p>
+                  <p className="truncate font-display text-base font-semibold text-foreground">{file.title}</p>
                   <p className="font-mono text-[0.7rem] uppercase tracking-[0.12em] text-muted-foreground">
-                    {detectKind(file.name)} {prettySize(file.size) && `· ${prettySize(file.size)}`}
+                    {detectKind(file.title, file.mime ?? "")}
+                    {prettySize(file.size) && ` · ${prettySize(file.size)}`}
                   </p>
                 </div>
                 <button
                   type="button"
-                  onClick={() => void remove(file.path)}
+                  onClick={() => {
+                    void deleteFile(file.id)
+                      .then(onChanged)
+                      .catch((error: unknown) =>
+                        toast.error(error instanceof Error ? error.message : "Could not delete file"),
+                      );
+                  }}
                   className="focus-ring inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-muted-foreground hover:border-destructive/50 hover:text-destructive"
                 >
                   <Trash2 className="h-3.5 w-3.5" /> Delete
                 </button>
               </div>
-              <MediaBlock data={{ url: file.url, title: file.name, name: file.name, size: file.size }} />
-            </section>
+              <MediaBlock
+                data={{
+                  url: file.url,
+                  title: file.title,
+                  name: file.title,
+                  mime: file.mime ?? "",
+                  size: file.size ?? 0,
+                }}
+              />
+            </div>
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
 }
