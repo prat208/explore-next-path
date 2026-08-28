@@ -93,3 +93,8 @@ export function useAccess() {
 export function gateList<T>(items: T[], unlocked: boolean, free = FREE_PREVIEW_COUNT): T[] {
   return unlocked ? items : items.slice(0, free);
 }
+
+/** True when an item at this position is still behind the referral gate. */
+export function isLocked(unlocked: boolean, index: number, free = FREE_PREVIEW_COUNT): boolean {
+  return !unlocked && index >= free;
+}
