@@ -5,10 +5,8 @@ import { ArrowRight, Compass, Search, Sparkles } from "lucide-react";
 import {
   articlesQuery,
   opportunitiesQuery,
-  projectsQuery,
   resourcesQuery,
   roadmapsQuery,
-  pathsQuery,
 } from "@/lib/content";
 import { CardShell, MiniTree, Pill, SectionHeading } from "@/components/site/bits";
 
@@ -33,8 +31,6 @@ export const Route = createFileRoute("/_site/")({
     await Promise.all([
       context.queryClient.ensureQueryData(articlesQuery({ limit: 7 })),
       context.queryClient.ensureQueryData(roadmapsQuery()),
-      context.queryClient.ensureQueryData(pathsQuery()),
-      context.queryClient.ensureQueryData(projectsQuery()),
       context.queryClient.ensureQueryData(resourcesQuery()),
       context.queryClient.ensureQueryData(opportunitiesQuery()),
     ]);
@@ -54,8 +50,6 @@ function Discover() {
   const [term, setTerm] = useState("");
   const articles = useSuspenseQuery(articlesQuery({ limit: 7 })).data;
   const roadmaps = useSuspenseQuery(roadmapsQuery()).data;
-  const paths = useSuspenseQuery(pathsQuery()).data;
-  const projects = useSuspenseQuery(projectsQuery()).data;
   const resources = useSuspenseQuery(resourcesQuery()).data;
   const opportunities = useSuspenseQuery(opportunitiesQuery()).data;
 
