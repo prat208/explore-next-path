@@ -12,7 +12,8 @@ export type FieldKind =
   | "select"
   | "array"
   | "date"
-  | "json";
+  | "json"
+  | "html";
 
 export type StudioField = {
   name: string;
