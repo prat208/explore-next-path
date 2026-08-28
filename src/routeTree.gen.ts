@@ -21,6 +21,7 @@ import { Route as SiteArticlesIndexRouteImport } from './routes/_site.articles.i
 import { Route as SiteArticlesSlugRouteImport } from './routes/_site.articles.$slug'
 import { Route as SiteCareersIndexRouteImport } from './routes/_site.careers.index'
 import { Route as SiteCareersSlugRouteImport } from './routes/_site.careers.$slug'
+import { Route as SiteFilesIndexRouteImport } from './routes/_site.files.index'
 import { Route as SiteLearnIndexRouteImport } from './routes/_site.learn.index'
 import { Route as SiteProjectsIndexRouteImport } from './routes/_site.projects.index'
 import { Route as SiteProjectsSlugRouteImport } from './routes/_site.projects.$slug'
@@ -91,6 +92,11 @@ const SiteCareersSlugRoute = SiteCareersSlugRouteImport.update({
   path: '/careers/$slug',
   getParentRoute: () => SiteRoute,
 } as any)
+const SiteFilesIndexRoute = SiteFilesIndexRouteImport.update({
+  id: '/files/',
+  path: '/files/',
+  getParentRoute: () => SiteRoute,
+} as any)
 const SiteLearnIndexRoute = SiteLearnIndexRouteImport.update({
   id: '/learn/',
   path: '/learn/',
@@ -158,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/roadmaps/$slug': typeof SiteRoadmapsSlugRoute
   '/articles/': typeof SiteArticlesIndexRoute
   '/careers/': typeof SiteCareersIndexRoute
+  '/files/': typeof SiteFilesIndexRoute
   '/learn/': typeof SiteLearnIndexRoute
   '/projects/': typeof SiteProjectsIndexRoute
   '/roadmaps/': typeof SiteRoadmapsIndexRoute
@@ -180,6 +187,7 @@ export interface FileRoutesByTo {
   '/roadmaps/$slug': typeof SiteRoadmapsSlugRoute
   '/articles': typeof SiteArticlesIndexRoute
   '/careers': typeof SiteCareersIndexRoute
+  '/files': typeof SiteFilesIndexRoute
   '/learn': typeof SiteLearnIndexRoute
   '/projects': typeof SiteProjectsIndexRoute
   '/roadmaps': typeof SiteRoadmapsIndexRoute
@@ -205,6 +213,7 @@ export interface FileRoutesById {
   '/_site/roadmaps/$slug': typeof SiteRoadmapsSlugRoute
   '/_site/articles/': typeof SiteArticlesIndexRoute
   '/_site/careers/': typeof SiteCareersIndexRoute
+  '/_site/files/': typeof SiteFilesIndexRoute
   '/_site/learn/': typeof SiteLearnIndexRoute
   '/_site/projects/': typeof SiteProjectsIndexRoute
   '/_site/roadmaps/': typeof SiteRoadmapsIndexRoute
@@ -230,6 +239,7 @@ export interface FileRouteTypes {
     | '/roadmaps/$slug'
     | '/articles/'
     | '/careers/'
+    | '/files/'
     | '/learn/'
     | '/projects/'
     | '/roadmaps/'
@@ -252,6 +262,7 @@ export interface FileRouteTypes {
     | '/roadmaps/$slug'
     | '/articles'
     | '/careers'
+    | '/files'
     | '/learn'
     | '/projects'
     | '/roadmaps'
@@ -276,6 +287,7 @@ export interface FileRouteTypes {
     | '/_site/roadmaps/$slug'
     | '/_site/articles/'
     | '/_site/careers/'
+    | '/_site/files/'
     | '/_site/learn/'
     | '/_site/projects/'
     | '/_site/roadmaps/'
@@ -375,6 +387,13 @@ declare module '@tanstack/react-router' {
       path: '/careers/$slug'
       fullPath: '/careers/$slug'
       preLoaderRoute: typeof SiteCareersSlugRouteImport
+      parentRoute: typeof SiteRoute
+    }
+    '/_site/files/': {
+      id: '/_site/files/'
+      path: '/files'
+      fullPath: '/files/'
+      preLoaderRoute: typeof SiteFilesIndexRouteImport
       parentRoute: typeof SiteRoute
     }
     '/_site/learn/': {
@@ -479,6 +498,7 @@ interface SiteRouteChildren {
   SiteRoadmapsSlugRoute: typeof SiteRoadmapsSlugRoute
   SiteArticlesIndexRoute: typeof SiteArticlesIndexRoute
   SiteCareersIndexRoute: typeof SiteCareersIndexRoute
+  SiteFilesIndexRoute: typeof SiteFilesIndexRoute
   SiteLearnIndexRoute: typeof SiteLearnIndexRoute
   SiteProjectsIndexRoute: typeof SiteProjectsIndexRoute
   SiteRoadmapsIndexRoute: typeof SiteRoadmapsIndexRoute
@@ -499,6 +519,7 @@ const SiteRouteChildren: SiteRouteChildren = {
   SiteRoadmapsSlugRoute: SiteRoadmapsSlugRoute,
   SiteArticlesIndexRoute: SiteArticlesIndexRoute,
   SiteCareersIndexRoute: SiteCareersIndexRoute,
+  SiteFilesIndexRoute: SiteFilesIndexRoute,
   SiteLearnIndexRoute: SiteLearnIndexRoute,
   SiteProjectsIndexRoute: SiteProjectsIndexRoute,
   SiteRoadmapsIndexRoute: SiteRoadmapsIndexRoute,
