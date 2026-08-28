@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Trash2, UploadCloud } from "lucide-react";
+import { FolderUp, Trash2, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 import { MediaBlock } from "@/components/blocks/MediaBlock";
 import { supabase } from "@/integrations/supabase/client";
