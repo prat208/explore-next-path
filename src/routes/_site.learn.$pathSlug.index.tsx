@@ -3,6 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { pathQuery } from "@/lib/content";
 import { ContinueExploring } from "@/components/site/ContinueExploring";
+import { AttachedFiles } from "@/components/site/AttachedFiles";
 import { SaveButton } from "@/components/site/SaveButton";
 import { Pill } from "@/components/site/bits";
 
@@ -138,6 +139,7 @@ function PathPage() {
         </aside>
       </div>
 
+      <AttachedFiles entityType="manual" slug={path.slug} />
       <ContinueExploring fromType="learning_path" fromId={path.id} />
     </>
   );

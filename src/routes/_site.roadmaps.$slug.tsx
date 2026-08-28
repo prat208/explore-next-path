@@ -6,6 +6,7 @@ import { roadmapQuery, type RoadmapNode } from "@/lib/content";
 import { RoadmapCanvas } from "@/components/roadmap/RoadmapCanvas";
 import { NodeVideo } from "@/components/roadmap/NodeVideo";
 import { ContinueExploring } from "@/components/site/ContinueExploring";
+import { AttachedFiles } from "@/components/site/AttachedFiles";
 import { SaveButton } from "@/components/site/SaveButton";
 import { Pill } from "@/components/site/bits";
 import { cn } from "@/lib/utils";
@@ -172,6 +173,7 @@ function RoadmapPage() {
         </aside>
       </div>
 
+      <AttachedFiles entityType="roadmap" slug={roadmap.slug} />
       <ContinueExploring fromType="roadmap" fromId={roadmap.id} />
     </>
   );

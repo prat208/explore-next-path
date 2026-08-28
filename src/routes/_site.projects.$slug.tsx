@@ -3,6 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { ExternalLink } from "lucide-react";
 import { projectQuery } from "@/lib/content";
 import { ContinueExploring } from "@/components/site/ContinueExploring";
+import { AttachedFiles } from "@/components/site/AttachedFiles";
 import { SaveButton } from "@/components/site/SaveButton";
 import { Pill } from "@/components/site/bits";
 
@@ -120,6 +121,7 @@ function ProjectPage() {
         </aside>
       </div>
 
+      <AttachedFiles entityType="project" slug={project.slug} />
       <ContinueExploring fromType="project" fromId={project.id} />
     </>
   );
