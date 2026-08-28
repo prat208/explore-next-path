@@ -329,12 +329,9 @@ const TABLE_FOR: Record<string, { table: string; title: string; sub: string }> =
   article: { table: "articles", title: "title", sub: "excerpt" },
   resource: { table: "resources", title: "title", sub: "description" },
   tool: { table: "tools", title: "name", sub: "tagline" },
-  project: { table: "projects", title: "title", sub: "outcome" },
   roadmap: { table: "roadmaps", title: "title", sub: "description" },
-  learning_path: { table: "learning_paths", title: "title", sub: "description" },
   career: { table: "careers", title: "title", sub: "overview" },
   opportunity: { table: "opportunities", title: "title", sub: "description" },
-  challenge: { table: "challenges", title: "title", sub: "statement" },
 };
 
 export function hrefFor(type: string, slug: string, extra?: string): string {
@@ -345,20 +342,14 @@ export function hrefFor(type: string, slug: string, extra?: string): string {
       return `/resources?highlight=${slug}`;
     case "tool":
       return `/resources?tool=${slug}`;
-    case "project":
-      return `/projects/${slug}`;
     case "roadmap":
       return `/roadmaps/${slug}`;
     case "roadmap_node":
       return `/roadmaps/${extra ?? ""}?node=${slug}`;
-    case "learning_path":
-      return `/learn/${slug}`;
     case "career":
       return `/careers/${slug}`;
     case "opportunity":
       return `/opportunities?highlight=${slug}`;
-    case "challenge":
-      return `/projects?challenge=${slug}`;
     default:
       return "/";
   }
@@ -432,7 +423,7 @@ export async function siteSearch(term: string): Promise<SearchGroup[]> {
   if (!q) return [];
   const like = `%${q}%`;
 
-  const [articles, resources, tools, projects, roadmaps, nodes, paths, careers, opportunities] =
+  const [articles, resources, tools, roadmaps, nodes, careers, opportunities] =
     await Promise.all([
       supabase
         .from("articles")
@@ -453,12 +444,6 @@ export async function siteSearch(term: string): Promise<SearchGroup[]> {
         .or(`name.ilike.${like},tagline.ilike.${like},description.ilike.${like}`)
         .limit(8),
       supabase
-        .from("projects")
-        .select("id,slug,title,outcome,difficulty")
-        .eq("status", "published")
-        .or(`title.ilike.${like},problem.ilike.${like},outcome.ilike.${like}`)
-        .limit(8),
-      supabase
         .from("roadmaps")
         .select("id,slug,title,description,difficulty")
         .eq("status", "published")
@@ -467,12 +452,6 @@ export async function siteSearch(term: string): Promise<SearchGroup[]> {
       supabase
         .from("roadmap_nodes")
         .select("id,slug,title,description,roadmap_id")
-        .or(`title.ilike.${like},description.ilike.${like}`)
-        .limit(6),
-      supabase
-        .from("learning_paths")
-        .select("id,slug,title,description,difficulty")
-        .eq("status", "published")
         .or(`title.ilike.${like},description.ilike.${like}`)
         .limit(6),
       supabase
@@ -539,32 +518,6 @@ export async function siteSearch(term: string): Promise<SearchGroup[]> {
         subtitle: r["description"] ?? null,
         href: hrefFor("resource", r["slug"]!),
         meta: r["level"] ?? null,
-      })),
-    },
-    {
-      type: "learning_path",
-      label: "Learning paths",
-      items: ((paths.data ?? []) as Record<string, string>[]).map((p) => ({
-        relation: "learn",
-        type: "learning_path" as const,
-        id: p["id"]!,
-        title: p["title"]!,
-        subtitle: p["description"] ?? null,
-        href: hrefFor("learning_path", p["slug"]!),
-        meta: p["difficulty"] ?? null,
-      })),
-    },
-    {
-      type: "project",
-      label: "Projects to build",
-      items: ((projects.data ?? []) as Record<string, string>[]).map((p) => ({
-        relation: "build",
-        type: "project" as const,
-        id: p["id"]!,
-        title: p["title"]!,
-        subtitle: p["outcome"] ?? null,
-        href: hrefFor("project", p["slug"]!),
-        meta: p["difficulty"] ?? null,
       })),
     },
     {

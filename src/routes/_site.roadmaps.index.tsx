@@ -1,3 +1,4 @@
+import { UploadedSections } from "@/components/site/UploadedSections";
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { roadmapsQuery } from "@/lib/content";
@@ -52,6 +53,7 @@ function RoadmapsIndex() {
             </CardShell>
           ))}
         </div>
+        <UploadedSections category="roadmap" title="Uploaded roadmaps" description="Full roadmap packs: diagrams, PDFs and interactive files." />
       </div>
     </>
   );

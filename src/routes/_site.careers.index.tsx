@@ -1,3 +1,4 @@
+import { UploadedSections } from "@/components/site/UploadedSections";
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { careersQuery } from "@/lib/content";
@@ -48,6 +49,7 @@ function CareersIndex() {
             </CardShell>
           ))}
         </div>
+        <UploadedSections category="career" title="Uploaded career packs" description="Guides, portfolios and interactive files for these roles." />
       </div>
     </>
   );

@@ -5,10 +5,8 @@ import { ArrowRight, Compass, Search, Sparkles } from "lucide-react";
 import {
   articlesQuery,
   opportunitiesQuery,
-  projectsQuery,
   resourcesQuery,
   roadmapsQuery,
-  pathsQuery,
 } from "@/lib/content";
 import { CardShell, MiniTree, Pill, SectionHeading } from "@/components/site/bits";
 
@@ -33,8 +31,6 @@ export const Route = createFileRoute("/_site/")({
     await Promise.all([
       context.queryClient.ensureQueryData(articlesQuery({ limit: 7 })),
       context.queryClient.ensureQueryData(roadmapsQuery()),
-      context.queryClient.ensureQueryData(pathsQuery()),
-      context.queryClient.ensureQueryData(projectsQuery()),
       context.queryClient.ensureQueryData(resourcesQuery()),
       context.queryClient.ensureQueryData(opportunitiesQuery()),
     ]);
@@ -44,8 +40,8 @@ export const Route = createFileRoute("/_site/")({
 
 const INTENTS = [
   { label: "I want to understand AI", to: "/articles", hint: "Start with plain-language explainers" },
-  { label: "I want to learn a skill", to: "/learn", hint: "Structured manuals, not video dumps" },
-  { label: "I want to build something", to: "/projects", hint: "Projects with real outcomes" },
+  { label: "I want a step-by-step map", to: "/roadmaps", hint: "Interactive roadmaps, not video dumps" },
+  { label: "I want tools and resources", to: "/resources", hint: "Reviewed, not scraped" },
   { label: "I want a career direction", to: "/careers", hint: "Roles, skills and proof of work" },
 ] as const;
 
@@ -54,8 +50,6 @@ function Discover() {
   const [term, setTerm] = useState("");
   const articles = useSuspenseQuery(articlesQuery({ limit: 7 })).data;
   const roadmaps = useSuspenseQuery(roadmapsQuery()).data;
-  const paths = useSuspenseQuery(pathsQuery()).data;
-  const projects = useSuspenseQuery(projectsQuery()).data;
   const resources = useSuspenseQuery(resourcesQuery()).data;
   const opportunities = useSuspenseQuery(opportunitiesQuery()).data;
 
@@ -216,58 +210,8 @@ function Discover() {
         </div>
       </section>
 
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-          <div className="grid gap-10 lg:grid-cols-2">
-            <div>
-              <SectionHeading
-                eyebrow="Learn"
-                title="Interactive manuals"
-                description="Read, run, check yourself, move on."
-                action={{ label: "All paths", to: "/learn" }}
-              />
-              <div className="grid gap-3">
-                {paths.slice(0, 3).map((path) => (
-                  <CardShell key={path.id} to="/learn/$pathSlug" params={{ pathSlug: path.slug }}>
-                    <div className="flex items-center gap-2">
-                      <Pill tone="secondary">{path.difficulty}</Pill>
-                      {path.estimated_hours && <Pill>~{path.estimated_hours}h</Pill>}
-                    </div>
-                    <h3 className="mt-3 font-display text-base font-semibold text-foreground">{path.title}</h3>
-                    {path.description && (
-                      <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">{path.description}</p>
-                    )}
-                  </CardShell>
-                ))}
-              </div>
-            </div>
-            <div>
-              <SectionHeading
-                eyebrow="Build"
-                title="Projects worth showing"
-                description="Each one solves a real problem and belongs in a portfolio."
-                action={{ label: "All projects", to: "/projects" }}
-              />
-              <div className="grid gap-3">
-                {projects.slice(0, 3).map((project) => (
-                  <CardShell key={project.id} to="/projects/$slug" params={{ slug: project.slug }}>
-                    <div className="flex items-center gap-2">
-                      <Pill tone="primary">{project.difficulty}</Pill>
-                      {project.estimated_hours && <Pill>~{project.estimated_hours}h</Pill>}
-                    </div>
-                    <h3 className="mt-3 font-display text-base font-semibold text-foreground">
-                      {project.title}
-                    </h3>
-                    {project.outcome && (
-                      <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">{project.outcome}</p>
-                    )}
-                  </CardShell>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+
+
 
       <section className="border-b border-border bg-surface/25">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">

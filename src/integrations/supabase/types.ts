@@ -1141,6 +1141,7 @@ export type Database = {
           entity_slug: string | null
           entity_type: string | null
           id: string
+          published: boolean
           slug: string
           sort_order: number
           subtitle: string | null
@@ -1154,6 +1155,7 @@ export type Database = {
           entity_slug?: string | null
           entity_type?: string | null
           id?: string
+          published?: boolean
           slug: string
           sort_order?: number
           subtitle?: string | null
@@ -1167,6 +1169,7 @@ export type Database = {
           entity_slug?: string | null
           entity_type?: string | null
           id?: string
+          published?: boolean
           slug?: string
           sort_order?: number
           subtitle?: string | null

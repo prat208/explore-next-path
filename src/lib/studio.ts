@@ -163,7 +163,7 @@ export const COLLECTIONS: Record<string, StudioCollection> = {
     hasStatus: true,
     entity: "learning_path",
     structure: "lessons",
-    viewTo: "/learn/$pathSlug",
+    viewTo: "/roadmaps",
     fields: [
       { name: "title", label: "Title", kind: "text", full: true },
       { name: "slug", label: "Slug", kind: "slug" },
@@ -188,7 +188,7 @@ export const COLLECTIONS: Record<string, StudioCollection> = {
     hasStatus: true,
     blockOwner: "project",
     entity: "project",
-    viewTo: "/projects/$slug",
+    viewTo: "/roadmaps",
     fields: [
       { name: "title", label: "Title", kind: "text", full: true },
       { name: "slug", label: "Slug", kind: "slug" },

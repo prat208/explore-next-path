@@ -10,6 +10,7 @@ export type UploadSection = {
   description: string | null;
   category: string;
   sort_order: number;
+  published: boolean;
   entity_type: string | null;
   entity_slug: string | null;
 };
@@ -26,18 +27,19 @@ export type UploadFile = {
   sort_order: number;
 };
 
+/** Where an upload appears on the public site. */
 export const SECTION_CATEGORIES = [
-  { value: "roadmap", label: "Roadmap" },
-  { value: "article", label: "Article" },
-  { value: "manual", label: "Learning manual" },
-  { value: "project", label: "Project" },
-  { value: "career", label: "Career" },
-  { value: "resource", label: "Resource pack" },
+  { value: "roadmap", label: "Roadmap", listing: "/roadmaps" },
+  { value: "article", label: "Article", listing: "/articles" },
+  { value: "resource", label: "Resource", listing: "/resources" },
+  { value: "opportunity", label: "Opportunity", listing: "/opportunities" },
+  { value: "career", label: "Career", listing: "/careers" },
 ] as const;
 
 export function categoryLabel(value: string): string {
-  return SECTION_CATEGORIES.find((c) => c.value === value)?.label ?? "Resource pack";
+  return SECTION_CATEGORIES.find((c) => c.value === value)?.label ?? "Upload";
 }
+
 
 /* ------------------------------------------------------------------- reads */
 
@@ -75,6 +77,28 @@ export const sectionQuery = (slug: string) =>
       return { ...section, files: [...(files ?? [])].sort((a, b) => a.sort_order - b.sort_order) };
     },
   });
+
+/** Published uploads for one public listing (e.g. every "roadmap" upload). */
+export const publishedSectionsQuery = (category: string) =>
+  queryOptions({
+    queryKey: ["published-sections", category],
+    queryFn: async (): Promise<(UploadSection & { files: UploadFile[] })[]> => {
+      const { data, error } = await supabase
+        .from("upload_sections")
+        .select("*, upload_files(*)")
+        .eq("category", category)
+        .eq("published", true)
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: false });
+      if (error) throw new Error(error.message);
+      return (data ?? []).map((row) => {
+        const { upload_files: files, ...section } = row as UploadSection & { upload_files: UploadFile[] };
+        return { ...section, files: [...(files ?? [])].sort((a, b) => a.sort_order - b.sort_order) };
+      });
+    },
+  });
+
+
 
 /* ------------------------------------------------------------------ writes */
 
@@ -139,13 +163,12 @@ export async function deleteFile(id: string): Promise<void> {
 
 export type AttachTarget = { type: string; slug: string; title: string };
 
-const ATTACH_TABLES: { type: string; table: "roadmaps" | "articles" | "learning_paths" | "projects" | "careers" }[] = [
+const ATTACH_TABLES: { type: string; table: "roadmaps" | "articles" | "careers" }[] = [
   { type: "roadmap", table: "roadmaps" },
   { type: "article", table: "articles" },
-  { type: "manual", table: "learning_paths" },
-  { type: "project", table: "projects" },
   { type: "career", table: "careers" },
 ];
+
 
 export const attachTargetsQuery = queryOptions({
   queryKey: ["attach-targets"],

@@ -33,7 +33,7 @@ export function AttachedFiles({ entityType, slug }: { entityType: string; slug: 
                 {section.subtitle && <p className="mt-1 text-sm text-muted-foreground">{section.subtitle}</p>}
               </div>
               <Link
-                to="/files/$slug"
+                to="/section/$slug"
                 params={{ slug: section.slug }}
                 className="focus-ring inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
               >
