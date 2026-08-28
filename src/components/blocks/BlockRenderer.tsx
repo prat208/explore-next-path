@@ -483,6 +483,7 @@ export const BLOCK_TYPES = [
   "common-mistake",
   "analogy",
   "embed",
+  "media",
   "image",
   "divider",
 ] as const;
