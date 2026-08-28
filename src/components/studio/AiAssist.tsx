@@ -161,8 +161,7 @@ export function AiRoadmapAssistant({
           roadmap_id: roadmapId,
           source_node_id: idByTitle.get(edge.source),
           target_node_id: idByTitle.get(edge.target),
-          label: edge.label || null,
-          kind: "unlocks",
+          kind: (edge.label || "unlocks").trim().slice(0, 24),
         }))
         .filter((row) => row.source_node_id && row.target_node_id);
       if (edgeRows.length) {
@@ -208,8 +207,7 @@ export function AiRoadmapAssistant({
         roadmap_id: roadmapId,
         source_node_id: `preview-${source}`,
         target_node_id: `preview-${target}`,
-        label: edge.label,
-        kind: "unlocks",
+        kind: (edge.label || "unlocks").trim().slice(0, 24),
       } as RoadmapEdge;
     })
     .filter((edge) => !edge.source_node_id.endsWith("--1") && !edge.target_node_id.endsWith("--1"));
