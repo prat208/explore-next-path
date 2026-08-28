@@ -7,7 +7,6 @@ import type { ContentBlock } from "@/lib/content";
 import type { StudioField } from "@/lib/studio";
 import { FieldInput, JsonField } from "./fields";
 import { BlockRenderer } from "@/components/blocks/BlockRenderer";
-import { AiBlockAssistant } from "./AiAssist";
 
 type Draft = { key: string; type: string; data: Record<string, unknown> };
 
@@ -312,18 +311,6 @@ export function BlockEditor({ ownerType, ownerId }: { ownerType: string; ownerId
 
       {!isLoading && !preview && (
         <div className="space-y-4 px-5 py-5">
-          <AiBlockAssistant
-            onInsert={(blocks) =>
-              setDrafts((prev) => [
-                ...(prev ?? []),
-                ...blocks.map((block, i) => ({
-                  key: `ai-${Date.now()}-${i}`,
-                  type: block.type,
-                  data: block.data as Record<string, unknown>,
-                })),
-              ])
-            }
-          />
           {list.map((draft, index) => {
             const spec = SPEC_BY_TYPE.get(draft.type);
             return (

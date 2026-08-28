@@ -315,10 +315,32 @@ export function UploadControl({
         className={cn(inputClass, "font-mono text-[0.75rem]")}
       />
       {value && (
-        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Check className="h-3.5 w-3.5 text-primary" /> Attached as{" "}
-          <span className="font-semibold text-foreground">{kind}</span> — readers see a dedicated {kind} experience.
-        </p>
+        <div className="space-y-2 rounded-xl border border-border bg-background p-3">
+          <p className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+            <Check className="h-3.5 w-3.5 text-primary" /> Attached as{" "}
+            <span className="font-semibold text-foreground">{kind}</span> — readers open it right inside the page.
+            <a
+              href={value}
+              target="_blank"
+              rel="noreferrer"
+              className="focus-ring ml-auto inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-semibold text-foreground hover:bg-muted"
+            >
+              Open file
+            </a>
+          </p>
+          <div className="overflow-hidden rounded-lg border border-border bg-muted">
+            {kind === "image" && <img src={value} alt="" className="max-h-64 w-full object-contain" />}
+            {kind === "video" && <video src={value} controls className="max-h-64 w-full bg-black" />}
+            {kind === "audio" && <audio src={value} controls className="w-full p-3" />}
+            {kind === "pdf" && <iframe src={value} title="PDF preview" className="h-64 w-full" />}
+            {kind === "html" && <iframe src={value} title="File preview" sandbox="allow-scripts" className="h-64 w-full bg-white" />}
+            {!["image", "video", "audio", "pdf", "html"].includes(String(kind)) && (
+              <p className="px-3 py-4 text-xs text-muted-foreground">
+                No inline preview for this type — use “Open file” to check it.
+              </p>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
