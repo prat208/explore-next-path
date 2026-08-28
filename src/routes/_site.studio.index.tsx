@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ExternalLink, FolderPlus, FolderUp, Link2, Trash2, UploadCloud } from "lucide-react";
+import { Eye, EyeOff, ExternalLink, FolderPlus, FolderUp, Link2, Trash2, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 import { MediaBlock } from "@/components/blocks/MediaBlock";
 import { bundleWebFiles, detectKind, prettySize, uploadToLibrary } from "@/lib/upload";
@@ -15,6 +15,7 @@ import {
   deleteFile,
   deleteSection,
   sectionsQuery,
+  updateFile,
   updateSection,
 } from "@/lib/sections";
 
@@ -168,10 +169,34 @@ function SectionPanel({ section, onChanged }: { section: SectionWithFiles; onCha
           <h2 className="mt-1 font-display text-2xl font-bold text-foreground">{section.title}</h2>
           {section.subtitle && <p className="mt-1 text-sm text-muted-foreground">{section.subtitle}</p>}
           <p className="mt-1 font-mono text-[0.7rem] uppercase tracking-[0.12em] text-muted-foreground">
-            {section.files.length} file{section.files.length === 1 ? "" : "s"}
+            {section.files.length} file{section.files.length === 1 ? "" : "s"} ·{" "}
+            <span className={section.published ? "text-primary" : "text-muted-foreground"}>
+              {section.published ? `live in /${section.category}s` : "draft — learners cannot see it"}
+            </span>
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              void updateSection(section.id, { published: !section.published })
+                .then(() => {
+                  toast.success(section.published ? "Unpublished" : "Published — it is live now");
+                  onChanged();
+                })
+                .catch((error: unknown) =>
+                  toast.error(error instanceof Error ? error.message : "Could not change status"),
+                );
+            }}
+            className={
+              section.published
+                ? "focus-ring inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-semibold text-muted-foreground hover:border-primary/50"
+                : "focus-ring inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary-deep"
+            }
+          >
+            {section.published ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+            {section.published ? "Unpublish" : "Publish"}
+          </button>
           <Link
             to="/section/$slug"
             params={{ slug: section.slug }}
@@ -238,8 +263,24 @@ function SectionPanel({ section, onChanged }: { section: SectionWithFiles; onCha
           {section.files.map((file) => (
             <div key={file.id}>
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="truncate font-display text-base font-semibold text-foreground">{file.title}</p>
+                <div className="min-w-0 flex-1">
+                  <input
+                    defaultValue={file.title}
+                    aria-label="File title"
+                    onBlur={(event) => {
+                      const next = event.target.value.trim();
+                      if (!next || next === file.title) return;
+                      void updateFile(file.id, { title: next })
+                        .then(() => {
+                          toast.success("Title saved");
+                          onChanged();
+                        })
+                        .catch((error: unknown) =>
+                          toast.error(error instanceof Error ? error.message : "Could not rename"),
+                        );
+                    }}
+                    className="focus-ring w-full rounded-lg border border-transparent bg-transparent px-2 py-1 font-display text-base font-semibold text-foreground hover:border-border"
+                  />
                   <p className="font-mono text-[0.7rem] uppercase tracking-[0.12em] text-muted-foreground">
                     {detectKind(file.title, file.mime ?? "")}
                     {prettySize(file.size) && ` · ${prettySize(file.size)}`}
@@ -301,7 +342,7 @@ function AttachControl({ section, onChanged }: { section: SectionWithFiles; onCh
         }}
         className="focus-ring min-w-56 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
       >
-        <option value="">Only its own page (/files/{section.slug})</option>
+        <option value="">Only its own page (/section/{section.slug})</option>
         {(targets.data ?? []).map((target) => (
           <option key={`${target.type}::${target.slug}`} value={`${target.type}::${target.slug}`}>
             {categoryLabel(target.type)}: {target.title}
