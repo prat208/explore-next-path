@@ -78,6 +78,28 @@ export const sectionQuery = (slug: string) =>
     },
   });
 
+/** Published uploads for one public listing (e.g. every "roadmap" upload). */
+export const publishedSectionsQuery = (category: string) =>
+  queryOptions({
+    queryKey: ["published-sections", category],
+    queryFn: async (): Promise<(UploadSection & { files: UploadFile[] })[]> => {
+      const { data, error } = await supabase
+        .from("upload_sections")
+        .select("*, upload_files(*)")
+        .eq("category", category)
+        .eq("published", true)
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: false });
+      if (error) throw new Error(error.message);
+      return (data ?? []).map((row) => {
+        const { upload_files: files, ...section } = row as UploadSection & { upload_files: UploadFile[] };
+        return { ...section, files: [...(files ?? [])].sort((a, b) => a.sort_order - b.sort_order) };
+      });
+    },
+  });
+
+
+
 /* ------------------------------------------------------------------ writes */
 
 export async function createSection(input: {
