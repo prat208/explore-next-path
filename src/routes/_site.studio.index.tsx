@@ -56,10 +56,19 @@ function UploadsPage() {
     if (!list || list.length === 0) return;
     setBusy(true);
     try {
-      for (const file of Array.from(list)) {
+      const picked = Array.from(list);
+      const toUpload = await bundleWebFiles(picked);
+      const bundled = picked.length > toUpload.length;
+      for (const file of toUpload) {
         await uploadToLibrary(file, FOLDER);
       }
-      toast.success(list.length === 1 ? "File uploaded" : `${list.length} files uploaded`);
+      toast.success(
+        bundled
+          ? `Bundled ${picked.length} files into one interactive page`
+          : toUpload.length === 1
+            ? "File uploaded"
+            : `${toUpload.length} files uploaded`,
+      );
       refresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Upload failed");
