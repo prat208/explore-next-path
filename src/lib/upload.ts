@@ -34,6 +34,71 @@ export async function uploadToLibrary(file: File, folder = "library"): Promise<U
   return { url: data.signedUrl, path, name: file.name, mime: file.type, size: file.size };
 }
 
+function baseName(path: string): string {
+  return (path.split("/").pop() ?? path).toLowerCase();
+}
+
+/**
+ * Turns a multi-file web bundle (index.html + style.css + app.js + images) into ONE
+ * self-contained .html file, so it renders exactly as intended inside the platform.
+ * Files that are not part of a bundle are returned untouched.
+ */
+export async function bundleWebFiles(files: File[]): Promise<File[]> {
+  const html = files.filter((f) => /\.html?$/i.test(f.name));
+  if (html.length === 0) return files;
+
+  const assets = files.filter((f) => !/\.html?$/i.test(f.name));
+  if (assets.length === 0) return files;
+
+  const texts = new Map<string, string>();
+  const dataUrls = new Map<string, string>();
+  for (const asset of assets) {
+    const key = baseName(asset.name);
+    if (/\.(css|js|mjs)$/i.test(key)) texts.set(key, await asset.text());
+    else dataUrls.set(key, await fileToDataUrl(asset));
+  }
+
+  const out: File[] = [];
+  for (const page of html) {
+    let source = await page.text();
+
+    // inline <link rel="stylesheet" href="style.css">
+    source = source.replace(/<link\b[^>]*>/gi, (tag) => {
+      if (!/stylesheet/i.test(tag)) return tag;
+      const href = tag.match(/href\s*=\s*["']([^"']+)["']/i)?.[1];
+      const css = href ? texts.get(baseName(href)) : undefined;
+      return css ? `<style>\n${css}\n</style>` : tag;
+    });
+
+    // inline <script src="app.js"></script>
+    source = source.replace(/<script\b([^>]*)>\s*<\/script>/gi, (tag, attrs: string) => {
+      const src = String(attrs).match(/src\s*=\s*["']([^"']+)["']/i)?.[1];
+      const js = src ? texts.get(baseName(src)) : undefined;
+      return js ? `<script>\n${js}\n</script>` : tag;
+    });
+
+    // inline local images / fonts referenced by filename
+    for (const [name, dataUrl] of dataUrls) {
+      source = source.replaceAll(`"${name}"`, `"${dataUrl}"`).replaceAll(`'${name}'`, `'${dataUrl}'`);
+      source = source.replaceAll(`"./${name}"`, `"${dataUrl}"`).replaceAll(`'./${name}'`, `'${dataUrl}'`);
+    }
+
+    out.push(new File([source], page.name, { type: "text/html" }));
+  }
+
+  // Keep only the bundled page(s) — assets are now embedded.
+  return out;
+}
+
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result ?? ""));
+    reader.onerror = () => reject(new Error(`Could not read ${file.name}`));
+    reader.readAsDataURL(file);
+  });
+}
+
 export type MediaKind = "video" | "audio" | "image" | "pdf" | "html" | "code" | "notebook" | "archive" | "doc" | "link";
 
 /** Best-effort classification from a filename, URL or MIME type. */
