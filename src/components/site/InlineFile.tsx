@@ -32,6 +32,27 @@ const RESIZE_SCRIPT = `<script>(function(){
   }
   schedule();
 
+  // Some uploads are app-like: they open modals/overlays with position:fixed.
+  // A frame stretched to full document height would place those off-screen, so
+  // tell the host to keep this document in its own scrollable viewport instead.
+  var appMode=false;
+  function detectApp(){
+    if(appMode) return;
+    var nodes=document.body?document.body.querySelectorAll('*'):[];
+    var limit=Math.min(nodes.length,3000);
+    for(var i=0;i<limit;i++){
+      var pos=getComputedStyle(nodes[i]).position;
+      if(pos==='fixed'||pos==='sticky'){
+        appMode=true;
+        parent.postMessage({__explorersEmbedMode:'app'},'*');
+        return;
+      }
+    }
+  }
+  window.addEventListener('load',function(){setTimeout(detectApp,60);});
+  setTimeout(detectApp,400);
+
+
   // Keep navigation inside this document: in-page anchors scroll here,
   // anything external opens in a new tab instead of loading a site in the frame.
   document.addEventListener('click',function(e){
