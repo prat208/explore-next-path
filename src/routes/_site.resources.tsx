@@ -8,7 +8,8 @@ import { EmptyState, PageHeader, Pill } from "@/components/site/bits";
 import { SaveButton } from "@/components/site/SaveButton";
 import { cn } from "@/lib/utils";
 import { ReferralGate } from "@/components/referral/ReferralGate";
-import { gateList, useAccess } from "@/lib/referral";
+import { isLocked, useAccess } from "@/lib/referral";
+import { LockedCard } from "@/components/referral/LockedCard";
 
 export const Route = createFileRoute("/_site/resources")({
   head: () => ({
@@ -49,12 +50,10 @@ function ResourcesPage() {
     (r) => (category === "all" || r.category === category) && (!freeOnly || r.has_free_tier || r.cost === "free"),
   );
   const matchingTools = tools.filter((t) => category === "all" || t.category === category);
-  const filteredResources = gateList(matchingResources, unlocked);
-  const filteredTools = gateList(matchingTools, unlocked);
-  const hiddenCount =
-    tab === "resources"
-      ? matchingResources.length - filteredResources.length
-      : matchingTools.length - filteredTools.length;
+  const filteredResources = matchingResources;
+  const filteredTools = matchingTools;
+  const countLocked = (n: number) => (unlocked ? 0 : Math.max(0, n - 1));
+  const hiddenCount = tab === "resources" ? countLocked(matchingResources.length) : countLocked(matchingTools.length);
 
   return (
     <>
@@ -120,8 +119,10 @@ function ResourcesPage() {
             <EmptyState title="No resources match those filters" hint="Try widening the category or cost filter." />
           ) : (
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredResources.map((resource) => (
-                <li key={resource.id} className="flex h-full flex-col rounded-xl border border-border bg-card p-5">
+              {filteredResources.map((resource, index) => (
+                <li key={resource.id} className="h-full">
+                  <LockedCard locked={isLocked(unlocked, index)}>
+                  <div className="flex h-full flex-col rounded-xl border border-border bg-card p-5">
                   <div className="flex flex-wrap items-center gap-2">
                     <Pill tone="primary">{resource.level}</Pill>
                     <Pill>{resource.resource_type.replace(/_/g, " ")}</Pill>
@@ -157,6 +158,8 @@ function ResourcesPage() {
                       </a>
                     </div>
                   </div>
+                  </div>
+                  </LockedCard>
                 </li>
               ))}
             </ul>
@@ -165,8 +168,10 @@ function ResourcesPage() {
           <EmptyState title="No tools in this category yet" />
         ) : (
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredTools.map((tool) => (
-              <li key={tool.id} className="flex h-full flex-col rounded-xl border border-border bg-card p-5">
+            {filteredTools.map((tool, index) => (
+              <li key={tool.id} className="h-full">
+                <LockedCard locked={isLocked(unlocked, index)}>
+                <div className="flex h-full flex-col rounded-xl border border-border bg-card p-5">
                 <div className="flex flex-wrap items-center gap-2">
                   <Pill tone="secondary">{tool.category.replace(/_/g, " ")}</Pill>
                   <Pill>{tool.pricing}</Pill>
@@ -187,6 +192,8 @@ function ResourcesPage() {
                     Visit <ExternalLink className="h-3.5 w-3.5" aria-hidden />
                   </a>
                 </div>
+                </div>
+                </LockedCard>
               </li>
             ))}
           </ul>

@@ -7,7 +7,8 @@ import { opportunitiesQuery } from "@/lib/content";
 import { EmptyState, PageHeader, Pill } from "@/components/site/bits";
 import { cn } from "@/lib/utils";
 import { ReferralGate } from "@/components/referral/ReferralGate";
-import { gateList, useAccess } from "@/lib/referral";
+import { isLocked, useAccess } from "@/lib/referral";
+import { LockedCard } from "@/components/referral/LockedCard";
 
 export const Route = createFileRoute("/_site/opportunities")({
   head: () => ({
@@ -36,7 +37,7 @@ function OpportunitiesPage() {
     [opportunities],
   );
   const matching = category === "all" ? opportunities : opportunities.filter((o) => o.category === category);
-  const filtered = gateList(matching, unlocked);
+  const filtered = matching;
 
   return (
     <>
@@ -69,8 +70,10 @@ function OpportunitiesPage() {
           <EmptyState title="Nothing open in this category" hint="Check back soon — listings are reviewed regularly." />
         ) : (
           <ul className="grid gap-4 sm:grid-cols-2">
-            {filtered.map((item) => (
-              <li key={item.id} className="rounded-xl border border-border bg-card p-5">
+            {filtered.map((item, index) => (
+              <li key={item.id} className="h-full">
+                <LockedCard locked={isLocked(unlocked, index)}>
+                <div className="h-full rounded-xl border border-border bg-card p-5">
                 <div className="flex flex-wrap items-center gap-2">
                   <Pill tone="primary">{item.category}</Pill>
                   <Pill>{item.cost}</Pill>
@@ -108,11 +111,13 @@ function OpportunitiesPage() {
                     </a>
                   )}
                 </div>
+                </div>
+                </LockedCard>
               </li>
             ))}
           </ul>
         )}
-        <ReferralGate label="opportunities" hidden={matching.length - filtered.length} />
+        <ReferralGate label="opportunities" hidden={unlocked ? 0 : Math.max(0, matching.length - 1)} />
         <UploadedSections category="opportunity" title="Uploaded opportunity packs" description="Forms, briefs and guides you can read right here." />
       </div>
     </>
