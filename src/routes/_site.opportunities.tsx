@@ -1,6 +1,5 @@
-import { UploadedSections } from "@/components/site/UploadedSections";
 import { createFileRoute } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { opportunitiesQuery } from "@/lib/content";
@@ -9,6 +8,8 @@ import { cn } from "@/lib/utils";
 import { ReferralGate } from "@/components/referral/ReferralGate";
 import { isLocked, useAccess } from "@/lib/referral";
 import { LockedCard } from "@/components/referral/LockedCard";
+import { UploadedSectionCard } from "@/components/site/UploadedSectionCard";
+import { publishedSectionsQuery } from "@/lib/sections";
 
 export const Route = createFileRoute("/_site/opportunities")({
   head: () => ({
@@ -29,6 +30,9 @@ export const Route = createFileRoute("/_site/opportunities")({
 
 function OpportunitiesPage() {
   const opportunities = useSuspenseQuery(opportunitiesQuery()).data;
+  const uploads = (useQuery(publishedSectionsQuery("opportunity")).data ?? []).filter(
+    (section) => section.files.length > 0,
+  );
   const { unlocked } = useAccess();
   const [category, setCategory] = useState("all");
 
@@ -37,7 +41,9 @@ function OpportunitiesPage() {
     [opportunities],
   );
   const matching = category === "all" ? opportunities : opportunities.filter((o) => o.category === category);
-  const filtered = matching;
+  const entries = category === "all"
+    ? [...uploads.map((section) => ({ kind: "upload" as const, section })), ...matching.map((item) => ({ kind: "item" as const, item }))]
+    : matching.map((item) => ({ kind: "item" as const, item }));
 
   return (
     <>
@@ -66,13 +72,18 @@ function OpportunitiesPage() {
       </PageHeader>
 
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-        {filtered.length === 0 ? (
+        {entries.length === 0 ? (
           <EmptyState title="Nothing open in this category" hint="Check back soon — listings are reviewed regularly." />
         ) : (
           <ul className="grid gap-4 sm:grid-cols-2">
-            {filtered.map((item, index) => (
-              <li key={item.id} className="h-full">
+            {entries.map((entry, index) => (
+              <li key={entry.kind === "upload" ? entry.section.id : entry.item.id} className="h-full">
                 <LockedCard locked={isLocked(unlocked, index)}>
+                {entry.kind === "upload" ? (
+                  <UploadedSectionCard section={entry.section} />
+                ) : (() => {
+                  const item = entry.item;
+                  return (
                 <div className="h-full rounded-xl border border-border bg-card p-5">
                 <div className="flex flex-wrap items-center gap-2">
                   <Pill tone="primary">{item.category}</Pill>
@@ -112,13 +123,14 @@ function OpportunitiesPage() {
                   )}
                 </div>
                 </div>
+                  );
+                })()}
                 </LockedCard>
               </li>
             ))}
           </ul>
         )}
-        <ReferralGate label="opportunities" hidden={unlocked ? 0 : Math.max(0, matching.length - 1)} />
-        <UploadedSections category="opportunity" title="Uploaded opportunity packs" description="Forms, briefs and guides you can read right here." />
+        <ReferralGate label="opportunities" hidden={unlocked ? 0 : Math.max(0, entries.length - 1)} />
       </div>
     </>
   );

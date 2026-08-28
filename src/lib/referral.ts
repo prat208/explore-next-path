@@ -45,7 +45,7 @@ export function captureReferralFromUrl() {
  * invite code and that any pending referral code is credited to the inviter.
  */
 export function useAccess() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, isAdmin } = useAuth();
   const qc = useQueryClient();
   const userId = user?.id;
   const stats = useQuery(referralStatsQuery(userId));
@@ -85,7 +85,7 @@ export function useAccess() {
     remaining: Math.max(0, REFERRALS_NEEDED - invited),
     code: stats.data?.code ?? null,
     /** Full library access: signed in and invited enough explorers. */
-    unlocked: Boolean(userId) && Boolean(stats.data?.unlocked),
+    unlocked: isAdmin || (Boolean(userId) && Boolean(stats.data?.unlocked)),
   };
 }
 

@@ -1,10 +1,14 @@
-import { UploadedSections } from "@/components/site/UploadedSections";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { ARTICLE_CATEGORIES, articlesQuery } from "@/lib/content";
 import { EmptyState, PageHeader, Pill } from "@/components/site/bits";
 import { cn } from "@/lib/utils";
+import { LockedCard } from "@/components/referral/LockedCard";
+import { ReferralGate } from "@/components/referral/ReferralGate";
+import { UploadedSectionCard } from "@/components/site/UploadedSectionCard";
+import { isLocked, useAccess } from "@/lib/referral";
+import { publishedSectionsQuery } from "@/lib/sections";
 
 export const Route = createFileRoute("/_site/articles/")({
   head: () => ({
@@ -28,12 +32,19 @@ export const Route = createFileRoute("/_site/articles/")({
 
 function ArticlesIndex() {
   const articles = useSuspenseQuery(articlesQuery()).data;
+  const uploads = (useQuery(publishedSectionsQuery("article")).data ?? []).filter(
+    (section) => section.files.length > 0,
+  );
+  const { unlocked } = useAccess();
   const [category, setCategory] = useState<string | null>(null);
   const [level, setLevel] = useState<string | null>(null);
 
   const filtered = articles.filter(
     (a) => (!category || a.category === category) && (!level || a.level === level),
   );
+  const entries = !category && !level
+    ? [...uploads.map((section) => ({ kind: "upload" as const, section })), ...filtered.map((article) => ({ kind: "article" as const, article }))]
+    : filtered.map((article) => ({ kind: "article" as const, article }));
 
   return (
     <>
@@ -71,43 +82,48 @@ function ArticlesIndex() {
         </div>
 
         <p className="eyebrow mt-6 text-muted-foreground">
-          {filtered.length} article{filtered.length === 1 ? "" : "s"}
+          {entries.length} article{entries.length === 1 ? "" : "s"}
         </p>
 
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((article) => (
+          {entries.map((entry, index) => (
+            <LockedCard key={entry.kind === "upload" ? entry.section.id : entry.article.id} locked={isLocked(unlocked, index)}>
+            {entry.kind === "upload" ? (
+              <UploadedSectionCard section={entry.section} />
+            ) : (
             <Link
-              key={article.id}
               to="/articles/$slug"
-              params={{ slug: article.slug }}
+              params={{ slug: entry.article.slug }}
               className="hover-lift focus-ring flex flex-col rounded-xl border border-border bg-card p-5"
             >
               <div className="flex flex-wrap items-center gap-2">
-                <Pill tone="primary">{article.category}</Pill>
-                <Pill>{article.level}</Pill>
+                <Pill tone="primary">{entry.article.category}</Pill>
+                <Pill>{entry.article.level}</Pill>
               </div>
               <h2 className="mt-3 font-display text-lg font-semibold leading-snug text-foreground">
-                {article.title}
+                {entry.article.title}
               </h2>
-              {article.excerpt && (
-                <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{article.excerpt}</p>
+              {entry.article.excerpt && (
+                <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{entry.article.excerpt}</p>
               )}
               <p className="eyebrow mt-auto pt-4 text-muted-foreground">
-                {article.reading_minutes} min read
-                {article.published_at
-                  ? ` · ${new Date(article.published_at).toLocaleDateString()}`
+                {entry.article.reading_minutes} min read
+                {entry.article.published_at
+                  ? ` · ${new Date(entry.article.published_at).toLocaleDateString()}`
                   : ""}
               </p>
             </Link>
+            )}
+            </LockedCard>
           ))}
         </div>
 
-        {filtered.length === 0 && (
+        {entries.length === 0 && (
           <div className="mt-6">
             <EmptyState title="Nothing matches those filters" hint="Try clearing the format or level." />
           </div>
         )}
-        <UploadedSections category="article" title="Uploaded articles" description="Documents, slides and interactive explainers you can read here." />
+        <ReferralGate label="articles" hidden={unlocked ? 0 : Math.max(0, entries.length - 1)} />
       </div>
     </>
   );
