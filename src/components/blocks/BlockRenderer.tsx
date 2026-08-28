@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ContentBlock } from "@/lib/content";
+import { EmbedBlock } from "./EmbedBlock";
 
 type Data = Record<string, unknown>;
 
@@ -425,6 +426,9 @@ function Block({ block }: { block: ContentBlock }) {
       return <StatBlock data={data} />;
     case "faq":
       return <FaqBlock data={data} />;
+    case "embed":
+    case "html":
+      return <EmbedBlock data={data} />;
     case "key-takeaway":
     case "tip":
     case "callout":
@@ -471,6 +475,7 @@ export const BLOCK_TYPES = [
   "warning",
   "common-mistake",
   "analogy",
+  "embed",
   "image",
   "divider",
 ] as const;
