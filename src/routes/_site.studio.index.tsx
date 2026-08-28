@@ -5,6 +5,7 @@ import { ExternalLink, FolderPlus, FolderUp, Trash2, UploadCloud } from "lucide-
 import { toast } from "sonner";
 import { MediaBlock } from "@/components/blocks/MediaBlock";
 import { bundleWebFiles, detectKind, prettySize, uploadToLibrary } from "@/lib/upload";
+import type { UploadFile, UploadSection } from "@/lib/sections";
 import {
   SECTION_CATEGORIES,
   addFile,
