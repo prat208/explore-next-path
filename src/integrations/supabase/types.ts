@@ -110,6 +110,30 @@ export type Database = {
           },
         ]
       }
+      assistant_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       authors: {
         Row: {
           avatar_url: string | null
@@ -1014,6 +1038,42 @@ export type Database = {
         }
         Relationships: []
       }
+      tech_updates: {
+        Row: {
+          fetched_at: string
+          id: string
+          kind: string
+          published_at: string | null
+          source: string | null
+          summary: string | null
+          tags: string[]
+          title: string
+          url: string
+        }
+        Insert: {
+          fetched_at?: string
+          id?: string
+          kind: string
+          published_at?: string | null
+          source?: string | null
+          summary?: string | null
+          tags?: string[]
+          title: string
+          url: string
+        }
+        Update: {
+          fetched_at?: string
+          id?: string
+          kind?: string
+          published_at?: string | null
+          source?: string | null
+          summary?: string | null
+          tags?: string[]
+          title?: string
+          url?: string
+        }
+        Relationships: []
+      }
       tools: {
         Row: {
           category: string
@@ -1204,6 +1264,54 @@ export type Database = {
           item_type?: string | null
           kind?: string
           metadata?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          created_at: string
+          extra: Json
+          goal: string | null
+          hours_per_week: number | null
+          interests: string[]
+          learning_style: string | null
+          level: string | null
+          onboarded: boolean
+          plan: string | null
+          region: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          extra?: Json
+          goal?: string | null
+          hours_per_week?: number | null
+          interests?: string[]
+          learning_style?: string | null
+          level?: string | null
+          onboarded?: boolean
+          plan?: string | null
+          region?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          extra?: Json
+          goal?: string | null
+          hours_per_week?: number | null
+          interests?: string[]
+          learning_style?: string | null
+          level?: string | null
+          onboarded?: boolean
+          plan?: string | null
+          region?: string | null
+          status?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []

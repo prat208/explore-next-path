@@ -142,12 +142,21 @@ export function renderMarkdown(source: string): string {
       continue;
     }
     if (/^\s*([-*+])\s+/.test(line)) {
+      const body = line.replace(/^\s*[-*+]\s+/, "");
+      const task = body.match(/^\[([ xX])\]\s*(.*)$/);
       if (listType !== "ul") {
         closeList();
-        out.push('<ul class="mt-3 list-disc space-y-1.5 pl-6">');
+        out.push(`<ul class="mt-3 space-y-1.5 ${task ? "list-none pl-0" : "list-disc pl-6"}">`);
         listType = "ul";
       }
-      out.push(`<li>${inline(line.replace(/^\s*[-*+]\s+/, ""))}</li>`);
+      if (task) {
+        const done = task[1]!.toLowerCase() === "x";
+        out.push(
+          `<li class="flex items-start gap-2.5"><span class="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded border ${done ? "border-primary bg-primary text-[10px] font-bold text-primary-foreground" : "border-border"}">${done ? "✓" : ""}</span><span${done ? ' class="text-muted-foreground line-through"' : ""}>${inline(task[2] ?? "")}</span></li>`,
+        );
+      } else {
+        out.push(`<li>${inline(body)}</li>`);
+      }
       continue;
     }
     if (/^\s*\d+[.)]\s+/.test(line)) {

@@ -9,6 +9,7 @@ import {
   roadmapsQuery,
 } from "@/lib/content";
 import { CardShell, MiniTree, Pill, SectionHeading } from "@/components/site/bits";
+import { ForYou } from "@/components/assistant/ForYou";
 
 export const Route = createFileRoute("/_site/")({
   head: () => ({
@@ -57,6 +58,7 @@ function Discover() {
 
   return (
     <>
+      <ForYou />
       <section className="topo relative overflow-hidden border-b border-border">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
           <p className="eyebrow inline-flex items-center gap-2 text-primary">

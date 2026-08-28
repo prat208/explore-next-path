@@ -17,6 +17,7 @@ import { Route as SiteOpportunitiesRouteImport } from './routes/_site.opportunit
 import { Route as SiteResourcesRouteImport } from './routes/_site.resources'
 import { Route as SiteSearchRouteImport } from './routes/_site.search'
 import { Route as SiteStudioRouteImport } from './routes/_site.studio'
+import { Route as SiteUpdatesRouteImport } from './routes/_site.updates'
 import { Route as SiteArticlesIndexRouteImport } from './routes/_site.articles.index'
 import { Route as SiteArticlesSlugRouteImport } from './routes/_site.articles.$slug'
 import { Route as SiteCareersIndexRouteImport } from './routes/_site.careers.index'
@@ -65,6 +66,11 @@ const SiteSearchRoute = SiteSearchRouteImport.update({
 const SiteStudioRoute = SiteStudioRouteImport.update({
   id: '/studio',
   path: '/studio',
+  getParentRoute: () => SiteRoute,
+} as any)
+const SiteUpdatesRoute = SiteUpdatesRouteImport.update({
+  id: '/updates',
+  path: '/updates',
   getParentRoute: () => SiteRoute,
 } as any)
 const SiteArticlesIndexRoute = SiteArticlesIndexRouteImport.update({
@@ -127,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/resources': typeof SiteResourcesRoute
   '/search': typeof SiteSearchRoute
   '/studio': typeof SiteStudioRouteWithChildren
+  '/updates': typeof SiteUpdatesRoute
   '/articles/$slug': typeof SiteArticlesSlugRoute
   '/careers/$slug': typeof SiteCareersSlugRoute
   '/roadmaps/$slug': typeof SiteRoadmapsSlugRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/opportunities': typeof SiteOpportunitiesRoute
   '/resources': typeof SiteResourcesRoute
   '/search': typeof SiteSearchRoute
+  '/updates': typeof SiteUpdatesRoute
   '/': typeof SiteIndexRoute
   '/articles/$slug': typeof SiteArticlesSlugRoute
   '/careers/$slug': typeof SiteCareersSlugRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/_site/resources': typeof SiteResourcesRoute
   '/_site/search': typeof SiteSearchRoute
   '/_site/studio': typeof SiteStudioRouteWithChildren
+  '/_site/updates': typeof SiteUpdatesRoute
   '/_site/': typeof SiteIndexRoute
   '/_site/articles/$slug': typeof SiteArticlesSlugRoute
   '/_site/careers/$slug': typeof SiteCareersSlugRoute
@@ -187,6 +196,7 @@ export interface FileRouteTypes {
     | '/resources'
     | '/search'
     | '/studio'
+    | '/updates'
     | '/articles/$slug'
     | '/careers/$slug'
     | '/roadmaps/$slug'
@@ -204,6 +214,7 @@ export interface FileRouteTypes {
     | '/opportunities'
     | '/resources'
     | '/search'
+    | '/updates'
     | '/'
     | '/articles/$slug'
     | '/careers/$slug'
@@ -224,6 +235,7 @@ export interface FileRouteTypes {
     | '/_site/resources'
     | '/_site/search'
     | '/_site/studio'
+    | '/_site/updates'
     | '/_site/'
     | '/_site/articles/$slug'
     | '/_site/careers/$slug'
@@ -298,6 +310,13 @@ declare module '@tanstack/react-router' {
       path: '/studio'
       fullPath: '/studio'
       preLoaderRoute: typeof SiteStudioRouteImport
+      parentRoute: typeof SiteRoute
+    }
+    '/_site/updates': {
+      id: '/_site/updates'
+      path: '/updates'
+      fullPath: '/updates'
+      preLoaderRoute: typeof SiteUpdatesRouteImport
       parentRoute: typeof SiteRoute
     }
     '/_site/articles/': {
@@ -395,6 +414,7 @@ interface SiteRouteChildren {
   SiteResourcesRoute: typeof SiteResourcesRoute
   SiteSearchRoute: typeof SiteSearchRoute
   SiteStudioRoute: typeof SiteStudioRouteWithChildren
+  SiteUpdatesRoute: typeof SiteUpdatesRoute
   SiteIndexRoute: typeof SiteIndexRoute
   SiteArticlesSlugRoute: typeof SiteArticlesSlugRoute
   SiteCareersSlugRoute: typeof SiteCareersSlugRoute
@@ -411,6 +431,7 @@ const SiteRouteChildren: SiteRouteChildren = {
   SiteResourcesRoute: SiteResourcesRoute,
   SiteSearchRoute: SiteSearchRoute,
   SiteStudioRoute: SiteStudioRouteWithChildren,
+  SiteUpdatesRoute: SiteUpdatesRoute,
   SiteIndexRoute: SiteIndexRoute,
   SiteArticlesSlugRoute: SiteArticlesSlugRoute,
   SiteCareersSlugRoute: SiteCareersSlugRoute,
