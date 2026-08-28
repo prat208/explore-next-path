@@ -37,7 +37,10 @@ export const refreshTechUpdates = createServerFn({ method: "POST" })
 
     for (const spec of QUERIES) {
       try {
-        const results = await firecrawlSearch(spec.query, { limit: 8, tbs: spec.tbs });
+        const results = await firecrawlSearch(spec.query, {
+          limit: 8,
+          ...(spec.tbs ? { tbs: spec.tbs } : {}),
+        });
         const rows = results.slice(0, 8).map((r) => ({
           kind: spec.kind,
           title: (r.title ?? r.url).slice(0, 240),
