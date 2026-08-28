@@ -216,58 +216,8 @@ function Discover() {
         </div>
       </section>
 
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-          <div className="grid gap-10 lg:grid-cols-2">
-            <div>
-              <SectionHeading
-                eyebrow="Learn"
-                title="Interactive manuals"
-                description="Read, run, check yourself, move on."
-                action={{ label: "All paths", to: "/learn" }}
-              />
-              <div className="grid gap-3">
-                {paths.slice(0, 3).map((path) => (
-                  <CardShell key={path.id} to="/learn/$pathSlug" params={{ pathSlug: path.slug }}>
-                    <div className="flex items-center gap-2">
-                      <Pill tone="secondary">{path.difficulty}</Pill>
-                      {path.estimated_hours && <Pill>~{path.estimated_hours}h</Pill>}
-                    </div>
-                    <h3 className="mt-3 font-display text-base font-semibold text-foreground">{path.title}</h3>
-                    {path.description && (
-                      <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">{path.description}</p>
-                    )}
-                  </CardShell>
-                ))}
-              </div>
-            </div>
-            <div>
-              <SectionHeading
-                eyebrow="Build"
-                title="Projects worth showing"
-                description="Each one solves a real problem and belongs in a portfolio."
-                action={{ label: "All projects", to: "/projects" }}
-              />
-              <div className="grid gap-3">
-                {projects.slice(0, 3).map((project) => (
-                  <CardShell key={project.id} to="/projects/$slug" params={{ slug: project.slug }}>
-                    <div className="flex items-center gap-2">
-                      <Pill tone="primary">{project.difficulty}</Pill>
-                      {project.estimated_hours && <Pill>~{project.estimated_hours}h</Pill>}
-                    </div>
-                    <h3 className="mt-3 font-display text-base font-semibold text-foreground">
-                      {project.title}
-                    </h3>
-                    {project.outcome && (
-                      <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">{project.outcome}</p>
-                    )}
-                  </CardShell>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+
+
 
       <section className="border-b border-border bg-surface/25">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
