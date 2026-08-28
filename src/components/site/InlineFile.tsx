@@ -65,9 +65,10 @@ function prepare(html: string, url: string): string {
 
 
 /**
- * Renders an uploaded file as a native part of the page — an uploaded HTML page
- * becomes the page body itself (full width, no card, no frame chrome), a PDF
- * reads inline, an image sits flush. Anything else falls back to MediaBlock.
+ * Renders any uploaded file as a native part of the page: HTML pages become the
+ * page body, PDFs read inline, images sit flush, video/audio play, code, CSV,
+ * markdown and notebooks render as typeset site content. Only formats a browser
+ * genuinely cannot open (Office docs, archives) fall back to a download card.
  */
 export function InlineFile({
   url,
@@ -80,17 +81,16 @@ export function InlineFile({
   mime?: string | null;
   size?: number | null;
 }) {
+  const name = (title || url).toLowerCase().split("?")[0] ?? "";
   const kind: MediaKind = detectKind(title || url, mime ?? "");
 
   if (kind === "html") return <HtmlPage url={url} title={title} />;
 
   if (kind === "pdf") {
     return (
-      <iframe
-        src={`${url}#view=FitH`}
-        title={title}
-        className="h-[calc(100vh-6rem)] w-full border-0 bg-white"
-      />
+      <object data={url} type="application/pdf" className="block h-[calc(100vh-6rem)] w-full bg-white">
+        <iframe src={`${url}#view=FitH`} title={title} className="h-full w-full border-0 bg-white" />
+      </object>
     );
   }
 
@@ -98,11 +98,26 @@ export function InlineFile({
     return <img src={url} alt={title} loading="lazy" className="mx-auto block w-full max-w-6xl" />;
   }
 
+  if (kind === "video") return <VideoFileViewer url={url} title={title} />;
+  if (kind === "audio") return <AudioFileViewer url={url} title={title} />;
+  if (kind === "notebook") return <NotebookFileViewer url={url} title={title} />;
+
+  if (kind === "code") {
+    if (/\.(md|markdown|mdx)$/.test(name)) return <MarkdownFileViewer url={url} title={title} />;
+    if (/\.(csv|tsv)$/.test(name)) return <CsvFileViewer url={url} title={title} />;
+    return <CodeFileViewer url={url} title={title} />;
+  }
+
+  if (kind === "link" && /\.(txt|log|ini|env|conf|toml|xml|svg|rtf)$/.test(name)) {
+    return <CodeFileViewer url={url} title={title} />;
+  }
+
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6">
       <MediaBlock data={{ url, title, name: title, mime: mime ?? "", size: size ?? 0 }} />
     </div>
   );
+
 }
 
 function HtmlPage({ url, title }: { url: string; title: string }) {
