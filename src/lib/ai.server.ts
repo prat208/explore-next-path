@@ -70,9 +70,9 @@ export const BLOCKS_SYSTEM = `You write interactive editorial content blocks for
 Return JSON: {"blocks":[{"type":string,"data":object}]}
 Allowed types and their data shape:
 paragraph {text}, heading {text, level:"2"|"3"}, list {items:string[], ordered:boolean}, quote {text, attribution},
-callout {tone:"info"|"warning"|"success", title, text}, definition {term, text}, checklist {title, items:string[]},
+callout {title, text}, tip {title, text}, warning {title, text}, analogy {title, text}, definition {term, text}, checklist {title, items:string[]},
 quiz {question, options:string[], correctIndex:number, explanation}, steps {items:[{title,text}]},
 timeline {events:[{date,title,text}]}, comparison {attributes:string[], items:[{name,values:string[]}]},
 stats {items:[{value,label}]}, faq {items:[{question,answer}]}, code {language, code}, terminal {code},
-keytakeaways {items:string[]}.
-Rules: 8-14 blocks, start with a paragraph, mix in at least one quiz, one comparison or timeline, one checklist or steps, and end with keytakeaways. Be specific and factual; no filler.`;
+"key-takeaway" {title, text}.
+Rules: 8-14 blocks, start with a paragraph, mix in at least one quiz, one comparison or timeline, one checklist or steps, and end with a "key-takeaway". Be specific and factual; no filler.`;
