@@ -429,6 +429,12 @@ function Block({ block }: { block: ContentBlock }) {
     case "embed":
     case "html":
       return <EmbedBlock data={data} />;
+    case "media":
+    case "file":
+    case "video":
+    case "audio":
+    case "pdf":
+      return <MediaBlock data={data} />;
     case "key-takeaway":
     case "tip":
     case "callout":
