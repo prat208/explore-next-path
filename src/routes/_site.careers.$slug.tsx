@@ -2,6 +2,7 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { careerQuery } from "@/lib/content";
 import { ContinueExploring } from "@/components/site/ContinueExploring";
+import { AttachedFiles } from "@/components/site/AttachedFiles";
 import { SaveButton } from "@/components/site/SaveButton";
 import { Pill } from "@/components/site/bits";
 
@@ -103,6 +104,7 @@ function CareerPage() {
         </aside>
       </div>
 
+      <AttachedFiles entityType="career" slug={career.slug} />
       <ContinueExploring fromType="career" fromId={career.id} />
     </>
   );

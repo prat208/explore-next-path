@@ -4,6 +4,7 @@ import { Clock, ExternalLink } from "lucide-react";
 import { articleQuery } from "@/lib/content";
 import { BlockRenderer } from "@/components/blocks/BlockRenderer";
 import { ContinueExploring } from "@/components/site/ContinueExploring";
+import { AttachedFiles } from "@/components/site/AttachedFiles";
 import { SaveButton } from "@/components/site/SaveButton";
 import { Pill } from "@/components/site/bits";
 
@@ -130,6 +131,7 @@ function ArticlePage() {
         </div>
       </article>
 
+      <AttachedFiles entityType="article" slug={article.slug} />
       <ContinueExploring fromType="article" fromId={article.id} />
     </>
   );

@@ -1086,6 +1086,95 @@ export type Database = {
         }
         Relationships: []
       }
+      upload_files: {
+        Row: {
+          created_at: string
+          id: string
+          mime: string | null
+          note: string | null
+          path: string | null
+          section_id: string
+          size: number | null
+          sort_order: number
+          title: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mime?: string | null
+          note?: string | null
+          path?: string | null
+          section_id: string
+          size?: number | null
+          sort_order?: number
+          title: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mime?: string | null
+          note?: string | null
+          path?: string | null
+          section_id?: string
+          size?: number | null
+          sort_order?: number
+          title?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "upload_files_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "upload_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      upload_sections: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          entity_slug: string | null
+          entity_type: string | null
+          id: string
+          slug: string
+          sort_order: number
+          subtitle: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          entity_slug?: string | null
+          entity_type?: string | null
+          id?: string
+          slug: string
+          sort_order?: number
+          subtitle?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          entity_slug?: string | null
+          entity_type?: string | null
+          id?: string
+          slug?: string
+          sort_order?: number
+          subtitle?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_activity: {
         Row: {
           created_at: string
