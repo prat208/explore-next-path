@@ -13,24 +13,17 @@ export function youtubeId(url?: string | null): string | null {
   return /^[\w-]{11}$/.test(url.trim()) ? url.trim() : null;
 }
 
+/**
+ * Renders whatever the author attached to a roadmap step — a YouTube link, an
+ * uploaded MP4, a PDF, a notebook or any other file — with the presentation
+ * that suits it.
+ */
 export function NodeVideo({ url, title }: { url?: string | null; title?: string | null }) {
-  const id = youtubeId(url);
-  if (!id) return null;
+  if (!url?.trim()) return null;
 
   return (
-    <div className="mt-5 border-t border-border pt-4">
-      <p className="eyebrow text-muted-foreground">Watch</p>
-      {title && <p className="mt-1 text-sm font-medium text-foreground">{title}</p>}
-      <div className="mt-2 aspect-video overflow-hidden rounded-lg border border-border bg-background">
-        <iframe
-          src={`https://www.youtube-nocookie.com/embed/${id}`}
-          title={title ?? "Roadmap step video"}
-          loading="lazy"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"
-          allowFullScreen
-          className="h-full w-full"
-        />
-      </div>
+    <div className="mt-5 border-t border-border pt-2">
+      <MediaBlock data={{ url: url.trim(), title: title ?? "Resource for this step" }} />
     </div>
   );
 }
