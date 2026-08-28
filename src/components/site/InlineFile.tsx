@@ -105,7 +105,7 @@ function HtmlPage({ url, title }: { url: string; title: string }) {
     fetch(url)
       .then((r) => r.text())
       .then((body) => {
-        if (alive) setDoc(prepare(body));
+        if (alive) setDoc(prepare(body, url));
       })
       .catch(() => {
         if (alive) setDoc("");
