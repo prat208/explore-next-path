@@ -11,6 +11,7 @@ import { AiRoadmapAssistant } from "./AiAssist";
 
 export function RoadmapStructureEditor({ roadmapId }: { roadmapId: string }) {
   const [newTitle, setNewTitle] = useState("");
+  const [newResourceUrl, setNewResourceUrl] = useState("");
   const [source, setSource] = useState("");
   const [targetNode, setTargetNode] = useState("");
   const [activeNode, setActiveNode] = useState<string | null>(null);
@@ -49,10 +50,12 @@ export function RoadmapStructureEditor({ roadmapId }: { roadmapId: string }) {
       sort: nodes.data?.length ?? 0,
       position_x: 0,
       position_y: (nodes.data?.length ?? 0) * 120,
+      video_url: newResourceUrl.trim() ? newResourceUrl.trim() : null,
     });
     if (error) toast.error(error.message);
     else {
       setNewTitle("");
+      setNewResourceUrl("");
       void nodes.refetch();
     }
   }
@@ -155,17 +158,29 @@ export function RoadmapStructureEditor({ roadmapId }: { roadmapId: string }) {
             <NodeCard key={node.id} node={node} onSave={saveNode} onDelete={removeNode} />
           ))}
           {!list.length && <p className="text-sm text-muted-foreground">No steps yet.</p>}
-          <div className="flex flex-wrap items-end gap-2 rounded-lg border border-dashed border-border p-4">
-            <Field label="New step title" className="min-w-64 flex-1">
-              <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} className={inputClass} />
-            </Field>
-            <button
-              type="button"
-              onClick={() => void addNode()}
-              className="focus-ring inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-deep"
+          <div className="space-y-4 rounded-lg border border-dashed border-border p-4">
+            <div className="flex flex-wrap items-end gap-2">
+              <Field label="New step title" className="min-w-64 flex-1">
+                <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} className={inputClass} />
+              </Field>
+              <button
+                type="button"
+                onClick={() => void addNode()}
+                className="focus-ring inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-deep"
+              >
+                <Plus className="h-4 w-4" /> Add step
+              </button>
+            </div>
+            <Field
+              label="Upload a file for this step"
+              hint="Optional — upload a video, PDF, image, audio, notebook or code file now, then add the step"
             >
-              <Plus className="h-4 w-4" /> Add step
-            </button>
+              <UploadControl
+                value={newResourceUrl}
+                onChange={setNewResourceUrl}
+                folder="roadmaps"
+              />
+            </Field>
           </div>
         </div>
       </section>
