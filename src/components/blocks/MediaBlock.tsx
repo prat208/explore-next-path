@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { detectKind, prettySize, type MediaKind } from "@/lib/upload";
-import { youtubeId } from "@/components/roadmap/NodeVideo";
+import { youtubeId } from "@/lib/youtube";
 import { EmbedBlock } from "./EmbedBlock";
 
 type Data = Record<string, unknown>;

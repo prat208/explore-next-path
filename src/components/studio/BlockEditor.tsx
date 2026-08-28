@@ -53,7 +53,7 @@ export const BLOCK_SPECS: BlockSpec[] = [
     type: "image",
     label: "Image",
     group: "Media",
-    fields: [f("url", "Image URL", "text"), f("alt", "Alt text", "text"), f("caption", "Caption", "text")],
+    fields: [f("url", "Image file or URL", "upload"), f("alt", "Alt text", "text"), f("caption", "Caption", "text")],
   },
   {
     type: "media",
