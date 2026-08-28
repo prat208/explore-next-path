@@ -141,3 +141,28 @@ export function CardGridSkeleton({ count = 6 }: { count?: number }) {
     </div>
   );
 }
+
+/** Tiny structural glyph that hints a roadmap is a branching diagram, not a list. */
+export function MiniTree({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 120 56"
+      aria-hidden
+      className={cn("h-12 w-full text-primary/70", className)}
+      fill="none"
+    >
+      <path
+        d="M14 28 C 40 28, 40 10, 66 10 M14 28 C 40 28, 40 28, 66 28 M14 28 C 40 28, 40 46, 66 46 M66 10 C 90 10, 90 28, 106 28 M66 46 C 90 46, 90 28, 106 28"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity="0.55"
+      />
+      <circle cx="14" cy="28" r="5" fill="currentColor" />
+      <rect x="60" y="5" width="12" height="10" rx="3" fill="currentColor" opacity="0.8" />
+      <rect x="60" y="23" width="12" height="10" rx="3" fill="currentColor" opacity="0.55" />
+      <rect x="60" y="41" width="12" height="10" rx="3" fill="currentColor" opacity="0.8" />
+      <circle cx="106" cy="28" r="5" className="text-secondary" fill="currentColor" opacity="0.9" />
+    </svg>
+  );
+}

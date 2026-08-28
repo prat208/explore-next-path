@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { roadmapsQuery } from "@/lib/content";
-import { CardShell, PageHeader, Pill } from "@/components/site/bits";
+import { CardShell, MiniTree, PageHeader, Pill } from "@/components/site/bits";
 
 export const Route = createFileRoute("/_site/roadmaps/")({
   head: () => ({
@@ -41,10 +41,14 @@ function RoadmapsIndex() {
                 <Pill tone="primary">{roadmap.difficulty}</Pill>
                 {roadmap.estimated_hours && <Pill>~{roadmap.estimated_hours}h</Pill>}
               </div>
-              <h2 className="mt-3 font-display text-lg font-semibold text-foreground">{roadmap.title}</h2>
+              <h2 className="mt-3 font-display text-xl font-semibold text-foreground">{roadmap.title}</h2>
               {roadmap.description && (
                 <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{roadmap.description}</p>
               )}
+              <div className="mt-5 rounded-xl border border-border bg-surface px-4 py-3">
+                <MiniTree />
+                <p className="eyebrow mt-2 text-muted-foreground">Interactive tree diagram</p>
+              </div>
             </CardShell>
           ))}
         </div>

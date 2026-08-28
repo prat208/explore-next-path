@@ -10,7 +10,7 @@ import {
   roadmapsQuery,
   pathsQuery,
 } from "@/lib/content";
-import { CardShell, Pill, SectionHeading } from "@/components/site/bits";
+import { CardShell, MiniTree, Pill, SectionHeading } from "@/components/site/bits";
 
 export const Route = createFileRoute("/_site/")({
   head: () => ({
@@ -202,6 +202,7 @@ function Discover() {
             {roadmaps.slice(0, 6).map((roadmap) => (
               <CardShell key={roadmap.id} to="/roadmaps/$slug" params={{ slug: roadmap.slug }}>
                 <Pill tone="primary">{roadmap.difficulty}</Pill>
+                <MiniTree className="mt-3" />
                 <h3 className="mt-3 font-display text-lg font-semibold text-foreground">{roadmap.title}</h3>
                 {roadmap.description && (
                   <p className="mt-1.5 line-clamp-3 text-sm text-muted-foreground">{roadmap.description}</p>
