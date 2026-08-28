@@ -766,6 +766,45 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          referred_user_id: string
+          referrer_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referred_user_id: string
+          referrer_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referred_user_id?: string
+          referrer_id?: string
+        }
+        Relationships: []
+      }
       resources: {
         Row: {
           audience: string[]
@@ -1396,6 +1435,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_referral: { Args: { _code: string }; Returns: boolean }
+      ensure_referral_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1404,6 +1445,7 @@ export type Database = {
         Returns: boolean
       }
       is_editor: { Args: { _user_id: string }; Returns: boolean }
+      referral_stats: { Args: never; Returns: Json }
     }
     Enums: {
       app_role: "user" | "editor" | "admin" | "super_admin"
