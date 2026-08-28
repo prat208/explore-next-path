@@ -220,6 +220,8 @@ function MediaSurface({
           className={cn("w-full border-0 bg-white", theatre ? "h-full min-h-[70vh]" : "h-[78vh]")}
         />
       );
+    case "html":
+      return <HtmlSurface url={url} title={title} theatre={theatre} />;
     case "code":
     case "notebook":
       return <TextSurface url={url} theatre={theatre} />;
@@ -406,5 +408,38 @@ function TextSurface({ url, theatre }: { url: string; theatre: boolean }) {
         {text ?? "Loading file…"}
       </pre>
     </div>
+  );
+}
+
+function HtmlSurface({ url, title, theatre }: { url: string; title: string; theatre: boolean }) {
+  const [doc, setDoc] = useState<string | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    setDoc(null);
+    fetch(url)
+      .then((response) => response.text())
+      .then((body) => {
+        if (alive) setDoc(body);
+      })
+      .catch(() => {
+        if (alive) setDoc("");
+      });
+    return () => {
+      alive = false;
+    };
+  }, [url]);
+
+  if (doc === null) {
+    return <p className="px-5 py-10 text-sm text-muted-foreground">Loading interactive file…</p>;
+  }
+
+  return (
+    <iframe
+      srcDoc={doc}
+      title={title}
+      sandbox="allow-scripts allow-popups"
+      className={cn("w-full border-0 bg-white", theatre ? "h-full min-h-[70vh]" : "h-[78vh]")}
+    />
   );
 }

@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Check, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 import { detectKind, uploadToLibrary } from "@/lib/upload";
@@ -267,7 +267,29 @@ export function UploadControl({
   folder?: string;
 }) {
   const [busy, setBusy] = useState(false);
+  const [text, setText] = useState<string | null>(null);
   const kind = value ? detectKind(value) : null;
+  const isText = kind === "html" || kind === "code" || kind === "notebook";
+
+  useEffect(() => {
+    if (!value || !isText) {
+      setText(null);
+      return;
+    }
+    let alive = true;
+    setText(null);
+    fetch(value)
+      .then((r) => r.text())
+      .then((body) => {
+        if (alive) setText(body.slice(0, 400_000));
+      })
+      .catch(() => {
+        if (alive) setText("");
+      });
+    return () => {
+      alive = false;
+    };
+  }, [value, isText]);
 
   async function pick(file: File | undefined) {
     if (!file) return;
@@ -333,8 +355,23 @@ export function UploadControl({
             {kind === "video" && <video src={value} controls className="max-h-64 w-full bg-black" />}
             {kind === "audio" && <audio src={value} controls className="w-full p-3" />}
             {kind === "pdf" && <iframe src={value} title="PDF preview" className="h-64 w-full" />}
-            {kind === "html" && <iframe src={value} title="File preview" sandbox="allow-scripts" className="h-64 w-full bg-white" />}
-            {!["image", "video", "audio", "pdf", "html"].includes(String(kind)) && (
+            {kind === "html" &&
+              (text === null ? (
+                <p className="px-3 py-4 text-xs text-muted-foreground">Loading preview…</p>
+              ) : (
+                <iframe
+                  srcDoc={text}
+                  title="File preview"
+                  sandbox="allow-scripts"
+                  className="h-72 w-full bg-white"
+                />
+              ))}
+            {(kind === "code" || kind === "notebook") && (
+              <pre className="max-h-64 overflow-auto p-3 text-[0.7rem] leading-relaxed text-foreground">
+                {text === null ? "Loading preview…" : text.slice(0, 4000)}
+              </pre>
+            )}
+            {!["image", "video", "audio", "pdf", "html", "code", "notebook"].includes(String(kind)) && (
               <p className="px-3 py-4 text-xs text-muted-foreground">
                 No inline preview for this type — use “Open file” to check it.
               </p>
