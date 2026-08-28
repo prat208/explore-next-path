@@ -1,3 +1,5 @@
+import { MediaBlock } from "@/components/blocks/MediaBlock";
+
 /** Extracts a YouTube video id from watch, youtu.be, shorts or embed URLs. */
 export function youtubeId(url?: string | null): string | null {
   if (!url) return null;
