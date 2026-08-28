@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { MediaBlock } from "@/components/blocks/MediaBlock";
+import {
+  AudioFileViewer,
+  CodeFileViewer,
+  CsvFileViewer,
+  MarkdownFileViewer,
+  NotebookFileViewer,
+  VideoFileViewer,
+} from "@/components/site/inline-viewers";
 import { detectKind, type MediaKind } from "@/lib/upload";
 
 const RESIZE_SCRIPT = `<script>(function(){
