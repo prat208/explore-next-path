@@ -44,8 +44,8 @@ export const Route = createFileRoute("/_site/")({
 
 const INTENTS = [
   { label: "I want to understand AI", to: "/articles", hint: "Start with plain-language explainers" },
-  { label: "I want to learn a skill", to: "/learn", hint: "Structured manuals, not video dumps" },
-  { label: "I want to build something", to: "/projects", hint: "Projects with real outcomes" },
+  { label: "I want a step-by-step map", to: "/roadmaps", hint: "Interactive roadmaps, not video dumps" },
+  { label: "I want tools and resources", to: "/resources", hint: "Reviewed, not scraped" },
   { label: "I want a career direction", to: "/careers", hint: "Roles, skills and proof of work" },
 ] as const;
 

@@ -12,11 +12,8 @@ export const Route = createFileRoute("/_site")({
 const NAV = [
   { to: "/", label: "Discover" },
   { to: "/articles", label: "Articles" },
-  { to: "/learn", label: "Learn" },
   { to: "/roadmaps", label: "Roadmaps" },
   { to: "/resources", label: "Resources" },
-  { to: "/files", label: "Files" },
-  { to: "/projects", label: "Projects" },
   { to: "/opportunities", label: "Opportunities" },
   { to: "/careers", label: "Careers" },
 ] as const;
