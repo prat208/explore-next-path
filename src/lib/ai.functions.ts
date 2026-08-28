@@ -25,7 +25,8 @@ export type AiRoadmapPlan = {
   edges: { source: string; target: string; label: string }[];
 };
 
-export type AiBlock = { type: string; data: Record<string, unknown> };
+export type AiJson = string | number | boolean | null | AiJson[] | { [key: string]: AiJson };
+export type AiBlock = { type: string; data: Record<string, AiJson> };
 
 const promptSchema = z.object({
   prompt: z.string().min(3).max(600),
@@ -114,5 +115,5 @@ export const generateContentBlocks = createServerFn({ method: "POST" })
 
     return (raw.blocks ?? [])
       .filter((block) => block && typeof block.type === "string")
-      .map((block) => ({ type: block.type, data: (block.data ?? {}) as Record<string, unknown> }));
+      .map((block) => ({ type: block.type, data: (block.data ?? {}) as Record<string, AiJson> }));
   });
