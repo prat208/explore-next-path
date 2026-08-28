@@ -32,6 +32,27 @@ const RESIZE_SCRIPT = `<script>(function(){
   }
   schedule();
 
+  // Some uploads are app-like: they open modals/overlays with position:fixed.
+  // A frame stretched to full document height would place those off-screen, so
+  // tell the host to keep this document in its own scrollable viewport instead.
+  var appMode=false;
+  function detectApp(){
+    if(appMode) return;
+    var nodes=document.body?document.body.querySelectorAll('*'):[];
+    var limit=Math.min(nodes.length,3000);
+    for(var i=0;i<limit;i++){
+      var pos=getComputedStyle(nodes[i]).position;
+      if(pos==='fixed'||pos==='sticky'){
+        appMode=true;
+        parent.postMessage({__explorersEmbedMode:'app'},'*');
+        return;
+      }
+    }
+  }
+  window.addEventListener('load',function(){setTimeout(detectApp,60);});
+  setTimeout(detectApp,400);
+
+
   // Keep navigation inside this document: in-page anchors scroll here,
   // anything external opens in a new tab instead of loading a site in the frame.
   document.addEventListener('click',function(e){
@@ -132,10 +153,12 @@ function HtmlPage({ url, title }: { url: string; title: string }) {
   const frameRef = useRef<HTMLIFrameElement | null>(null);
   const [doc, setDoc] = useState<string | null>(null);
   const [height, setHeight] = useState(900);
+  const [appMode, setAppMode] = useState(false);
 
   useEffect(() => {
     let alive = true;
     setDoc(null);
+    setAppMode(false);
     fetch(url)
       .then((r) => r.text())
       .then((body) => {
@@ -151,11 +174,11 @@ function HtmlPage({ url, title }: { url: string; title: string }) {
 
   useEffect(() => {
     function onMessage(event: MessageEvent) {
-      const payload = event.data as { __explorersEmbedHeight?: number } | null;
-      const next = payload && typeof payload.__explorersEmbedHeight === "number" ? payload.__explorersEmbedHeight : 0;
-      if (next > 0 && frameRef.current && event.source === frameRef.current.contentWindow) {
-        setHeight(Math.max(400, Math.min(next + 24, 40000)));
-      }
+      if (!frameRef.current || event.source !== frameRef.current.contentWindow) return;
+      const payload = event.data as { __explorersEmbedHeight?: number; __explorersEmbedMode?: string } | null;
+      if (payload?.__explorersEmbedMode === "app") setAppMode(true);
+      const next = typeof payload?.__explorersEmbedHeight === "number" ? payload.__explorersEmbedHeight : 0;
+      if (next > 0) setHeight(Math.max(400, Math.min(next + 24, 40000)));
     }
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
@@ -184,7 +207,8 @@ function HtmlPage({ url, title }: { url: string; title: string }) {
       sandbox="allow-scripts allow-popups allow-forms allow-modals allow-downloads allow-presentation allow-popups-to-escape-sandbox"
       allow="clipboard-write; fullscreen; autoplay"
       className="block w-full border-0 bg-transparent"
-      style={{ height }}
+      style={appMode ? { height: "calc(100vh - 5rem)" } : { height }}
     />
   );
+
 }
