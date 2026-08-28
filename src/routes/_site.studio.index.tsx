@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Trash2, UploadCloud } from "lucide-react";
+import { FolderUp, Trash2, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 import { MediaBlock } from "@/components/blocks/MediaBlock";
 import { supabase } from "@/integrations/supabase/client";
-import { detectKind, prettySize, uploadToLibrary } from "@/lib/upload";
+import { bundleWebFiles, detectKind, prettySize, uploadToLibrary } from "@/lib/upload";
 
 export const Route = createFileRoute("/_site/studio/")({
   component: UploadsPage,
@@ -56,10 +56,19 @@ function UploadsPage() {
     if (!list || list.length === 0) return;
     setBusy(true);
     try {
-      for (const file of Array.from(list)) {
+      const picked = Array.from(list);
+      const toUpload = await bundleWebFiles(picked);
+      const bundled = picked.length > toUpload.length;
+      for (const file of toUpload) {
         await uploadToLibrary(file, FOLDER);
       }
-      toast.success(list.length === 1 ? "File uploaded" : `${list.length} files uploaded`);
+      toast.success(
+        bundled
+          ? `Bundled ${picked.length} files into one interactive page`
+          : toUpload.length === 1
+            ? "File uploaded"
+            : `${toUpload.length} files uploaded`,
+      );
       refresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Upload failed");
@@ -96,12 +105,32 @@ function UploadsPage() {
         }}
         className="rounded-3xl border border-dashed border-primary/40 bg-primary/[0.04] px-6 py-10 text-center"
       >
-        <label className="focus-within:ring-primary/40 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground">
-          <UploadCloud className="h-4 w-4" />
-          {busy ? "Uploading…" : "Choose files"}
-          <input type="file" multiple className="sr-only" disabled={busy} onChange={(e) => void upload(e.target.files)} />
-        </label>
-        <p className="mt-3 text-xs text-muted-foreground">or drag and drop them anywhere in this box</p>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <label className="focus-within:ring-primary/40 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground">
+            <UploadCloud className="h-4 w-4" />
+            {busy ? "Uploading…" : "Choose files"}
+            <input type="file" multiple className="sr-only" disabled={busy} onChange={(e) => void upload(e.target.files)} />
+          </label>
+          <label className="focus-ring inline-flex cursor-pointer items-center gap-2 rounded-xl border border-border bg-background px-5 py-3 text-sm font-semibold text-foreground hover:bg-muted">
+            <FolderUp className="h-4 w-4" />
+            Choose a whole folder
+            <input
+              type="file"
+              multiple
+              className="sr-only"
+              disabled={busy}
+              // @ts-expect-error non-standard but supported directory picker
+              webkitdirectory=""
+              directory=""
+              onChange={(e) => void upload(e.target.files)}
+            />
+          </label>
+        </div>
+        <p className="mt-3 text-xs text-muted-foreground">
+          or drag and drop here. Uploading an <span className="font-mono">index.html</span> together with its{" "}
+          <span className="font-mono">style.css</span> / <span className="font-mono">app.js</span> (or the whole folder)
+          merges them into one self-contained interactive page — that&rsquo;s why a lone HTML file looks unstyled.
+        </p>
       </div>
 
       {loading ? (

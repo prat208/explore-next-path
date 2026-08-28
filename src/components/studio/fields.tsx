@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Check, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
-import { detectKind, uploadToLibrary } from "@/lib/upload";
+import { bundleWebFiles, detectKind, uploadToLibrary } from "@/lib/upload";
 import { cn } from "@/lib/utils";
 import type { StudioField } from "@/lib/studio";
 
@@ -291,10 +291,13 @@ export function UploadControl({
     };
   }, [value, isText]);
 
-  async function pick(file: File | undefined) {
-    if (!file) return;
+  async function pick(list: FileList | null | undefined) {
+    const picked = list ? Array.from(list) : [];
+    if (picked.length === 0) return;
     setBusy(true);
     try {
+      const [file] = await bundleWebFiles(picked);
+      if (!file) return;
       const uploaded = await uploadToLibrary(file, folder);
       onChange(uploaded.url);
       toast.success(`${file.name} uploaded`);
@@ -311,7 +314,7 @@ export function UploadControl({
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
-          void pick(e.dataTransfer.files?.[0]);
+          void pick(e.dataTransfer.files);
         }}
         className="rounded-xl border border-dashed border-border bg-background px-3 py-3"
       >
@@ -323,7 +326,8 @@ export function UploadControl({
               type="file"
               className="sr-only"
               disabled={busy}
-              onChange={(e) => void pick(e.target.files?.[0])}
+              multiple
+              onChange={(e) => void pick(e.target.files)}
             />
           </label>
           <span className="text-xs text-muted-foreground">or drop it here — video, PDF, image, audio, code, zip</span>
