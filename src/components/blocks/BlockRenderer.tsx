@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { ContentBlock } from "@/lib/content";
 import { EmbedBlock } from "./EmbedBlock";
+import { MediaBlock } from "./MediaBlock";
 
 type Data = Record<string, unknown>;
 
@@ -429,6 +430,12 @@ function Block({ block }: { block: ContentBlock }) {
     case "embed":
     case "html":
       return <EmbedBlock data={data} />;
+    case "media":
+    case "file":
+    case "video":
+    case "audio":
+    case "pdf":
+      return <MediaBlock data={data} />;
     case "key-takeaway":
     case "tip":
     case "callout":
@@ -476,6 +483,7 @@ export const BLOCK_TYPES = [
   "common-mistake",
   "analogy",
   "embed",
+  "media",
   "image",
   "divider",
 ] as const;

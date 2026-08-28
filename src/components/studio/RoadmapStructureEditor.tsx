@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { RoadmapEdge, RoadmapNode } from "@/lib/content";
 import { slugify } from "@/lib/studio";
-import { Field, inputClass } from "./fields";
+import { Field, UploadControl, inputClass } from "./fields";
 import { RoadmapCanvas } from "@/components/roadmap/RoadmapCanvas";
 import { AiRoadmapAssistant } from "./AiAssist";
 
@@ -293,12 +293,15 @@ function NodeCard({
             className={inputClass}
           />
         </Field>
-        <Field label="YouTube video link" hint="Paste any youtube.com or youtu.be URL" className="sm:col-span-2">
-          <input
+        <Field
+          label="Video or file for this step"
+          hint="Upload an MP4/PDF/notebook, or paste a YouTube link — the step renders the right player automatically"
+          className="sm:col-span-2"
+        >
+          <UploadControl
             value={draft.video_url ?? ""}
-            onChange={(e) => set({ video_url: e.target.value })}
-            placeholder="https://www.youtube.com/watch?v=..."
-            className={`${inputClass} font-mono text-[0.82rem]`}
+            onChange={(next) => set({ video_url: next })}
+            folder="roadmaps"
           />
         </Field>
         <Field label="Video label" hint="Optional title shown above the player" className="sm:col-span-2">

@@ -13,7 +13,8 @@ export type FieldKind =
   | "array"
   | "date"
   | "json"
-  | "html";
+  | "html"
+  | "upload";
 
 export type StudioField = {
   name: string;

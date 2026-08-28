@@ -1,0 +1,4 @@
+CREATE POLICY "uploads_public_read" ON storage.objects FOR SELECT USING (bucket_id = 'uploads');
+CREATE POLICY "uploads_editor_insert" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'uploads' AND (public.has_role(auth.uid(),'editor') OR public.has_role(auth.uid(),'admin') OR public.has_role(auth.uid(),'super_admin')));
+CREATE POLICY "uploads_editor_update" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'uploads' AND (public.has_role(auth.uid(),'editor') OR public.has_role(auth.uid(),'admin') OR public.has_role(auth.uid(),'super_admin')));
+CREATE POLICY "uploads_editor_delete" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'uploads' AND (public.has_role(auth.uid(),'editor') OR public.has_role(auth.uid(),'admin') OR public.has_role(auth.uid(),'super_admin')));

@@ -1,4 +1,7 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { Check, UploadCloud } from "lucide-react";
+import { toast } from "sonner";
+import { detectKind, uploadToLibrary } from "@/lib/upload";
 import { cn } from "@/lib/utils";
 import type { StudioField } from "@/lib/studio";
 
@@ -114,6 +117,16 @@ export function FieldInput({
               className={cn(inputClass, "resize-y font-mono text-[0.78rem] leading-relaxed")}
             />
           </div>
+        </Field>
+      );
+    case "upload":
+      return (
+        <Field
+          label={field.label}
+          hint={field.hint ?? "Upload a video, PDF, image, audio, notebook or any file — readers get a purpose-built player for it"}
+          className={field.full ? "sm:col-span-2" : ""}
+        >
+          <UploadControl value={typeof value === "string" ? value : ""} onChange={onChange} />
         </Field>
       );
     case "boolean":
@@ -241,5 +254,72 @@ export function JsonField({
         )}
       />
     </Field>
+  );
+}
+
+export function UploadControl({
+  value,
+  onChange,
+  folder = "library",
+}: {
+  value: string;
+  onChange: (next: string) => void;
+  folder?: string;
+}) {
+  const [busy, setBusy] = useState(false);
+  const kind = value ? detectKind(value) : null;
+
+  async function pick(file: File | undefined) {
+    if (!file) return;
+    setBusy(true);
+    try {
+      const uploaded = await uploadToLibrary(file, folder);
+      onChange(uploaded.url);
+      toast.success(`${file.name} uploaded`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="space-y-2">
+      <div
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault();
+          void pick(e.dataTransfer.files?.[0]);
+        }}
+        className="rounded-xl border border-dashed border-border bg-background px-3 py-3"
+      >
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="focus-within:ring-primary/40 inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground">
+            <UploadCloud className="h-3.5 w-3.5" />
+            {busy ? "Uploading…" : "Choose file"}
+            <input
+              type="file"
+              className="sr-only"
+              disabled={busy}
+              onChange={(e) => void pick(e.target.files?.[0])}
+            />
+          </label>
+          <span className="text-xs text-muted-foreground">or drop it here — video, PDF, image, audio, code, zip</span>
+        </div>
+      </div>
+      <input
+        type="text"
+        value={value}
+        placeholder="…or paste a link (YouTube, Vimeo, Loom, any file URL)"
+        onChange={(e) => onChange(e.target.value)}
+        className={cn(inputClass, "font-mono text-[0.75rem]")}
+      />
+      {value && (
+        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Check className="h-3.5 w-3.5 text-primary" /> Attached as{" "}
+          <span className="font-semibold text-foreground">{kind}</span> — readers see a dedicated {kind} experience.
+        </p>
+      )}
+    </div>
   );
 }

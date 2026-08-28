@@ -53,7 +53,36 @@ export const BLOCK_SPECS: BlockSpec[] = [
     type: "image",
     label: "Image",
     group: "Media",
-    fields: [f("url", "Image URL", "text"), f("alt", "Alt text", "text"), f("caption", "Caption", "text")],
+    fields: [f("url", "Image file or URL", "upload"), f("alt", "Alt text", "text"), f("caption", "Caption", "text")],
+  },
+  {
+    type: "media",
+    label: "Upload anything (video, PDF, audio, notebook, image…)",
+    group: "Media",
+    fields: [
+      f("url", "File or link", "upload"),
+      f("title", "What is this?", "text", { full: false }),
+      f("kind", "Force a presentation", "select", {
+        full: false,
+        options: [
+          { value: "", label: "Auto-detect (recommended)" },
+          { value: "video", label: "Video player + chapters" },
+          { value: "audio", label: "Audio player" },
+          { value: "pdf", label: "Document reader" },
+          { value: "image", label: "Visual" },
+          { value: "code", label: "Source viewer" },
+          { value: "notebook", label: "Notebook viewer" },
+          { value: "link", label: "Download card" },
+        ],
+      }),
+      f("chapters", "Chapters / sections", "array", {
+        rows: 5,
+        hint: 'One per line, e.g. "1:20 Why embeddings matter" — clicking one jumps the player there',
+      }),
+      f("takeaways", "What to take away", "array", { rows: 4 }),
+      f("caption", "Caption", "text"),
+      f("note", "Guidance note", "textarea", { rows: 2 }),
+    ],
   },
   {
     type: "embed",
