@@ -37,12 +37,11 @@ function SectionPage() {
   if (!section) return null;
 
   const listing = SECTION_CATEGORIES.find((c) => c.value === section.category);
+  const single = section.files.length === 1;
 
   return (
     <>
-      <PageHeader eyebrow={categoryLabel(section.category)} title={section.title} description={section.subtitle ?? "Files, diagrams and documents you can open right here."} />
-
-      <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+      <div className="mx-auto max-w-6xl px-4 pt-8 sm:px-6">
         {listing && (
           <Link
             to={listing.listing}
@@ -51,44 +50,41 @@ function SectionPage() {
             <ArrowLeft className="h-4 w-4" /> All {listing.label.toLowerCase()}s
           </Link>
         )}
-
+        <p className="eyebrow mt-5 text-primary">{categoryLabel(section.category)}</p>
+        <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          {section.title}
+        </h1>
+        {section.subtitle && <p className="mt-3 max-w-2xl text-base text-muted-foreground">{section.subtitle}</p>}
         {section.description && (
-          <p className="mt-6 whitespace-pre-line text-base leading-relaxed text-muted-foreground">{section.description}</p>
-        )}
-
-        {section.files.length === 0 ? (
-          <div className="mt-8">
-            <EmptyState title="Nothing here yet" hint="Files for this section are on the way." />
-          </div>
-        ) : (
-          <div className="mt-10 space-y-12">
-            {section.files.map((file, index) => (
-              <div key={file.id}>
-                <div className="flex flex-wrap items-baseline gap-2.5">
-                  <span className="font-mono text-xs font-semibold text-primary">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <h2 className="font-display text-lg font-semibold text-foreground">{file.title}</h2>
-                  <Pill>
-                    {detectKind(file.title, file.mime ?? "")}
-                    {prettySize(file.size) && ` · ${prettySize(file.size)}`}
-                  </Pill>
-                </div>
-                {file.note && <p className="mt-2 text-sm text-muted-foreground">{file.note}</p>}
-                <MediaBlock
-                  data={{
-                    url: file.url,
-                    title: file.title,
-                    name: file.title,
-                    mime: file.mime ?? "",
-                    size: file.size ?? 0,
-                  }}
-                />
-              </div>
-            ))}
-          </div>
+          <p className="mt-4 max-w-3xl whitespace-pre-line text-base leading-relaxed text-muted-foreground">
+            {section.description}
+          </p>
         )}
       </div>
+
+      {section.files.length === 0 ? (
+        <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
+          <EmptyState title="Nothing here yet" hint="Files for this section are on the way." />
+        </div>
+      ) : (
+        <div className="mt-8 pb-16">
+          {section.files.map((file) => (
+            <section key={file.id} className="border-t border-border/70 pt-2 first:border-t-0">
+              {!single && (
+                <div className="mx-auto max-w-6xl px-4 pb-2 pt-6 sm:px-6">
+                  <h2 className="font-display text-xl font-semibold text-foreground">{file.title}</h2>
+                  {file.note && <p className="mt-1.5 text-sm text-muted-foreground">{file.note}</p>}
+                </div>
+              )}
+              {single && file.note && (
+                <p className="mx-auto max-w-6xl px-4 pb-4 text-sm text-muted-foreground sm:px-6">{file.note}</p>
+              )}
+              <InlineFile url={file.url} title={file.title} mime={file.mime} size={file.size} />
+            </section>
+          ))}
+        </div>
+      )}
     </>
   );
 }
+
