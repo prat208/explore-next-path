@@ -24,7 +24,7 @@ export async function uploadToLibrary(file: File, folder = "library"): Promise<U
   const { error } = await supabase.storage.from("uploads").upload(path, file, {
     cacheControl: "31536000",
     upsert: false,
-    contentType: file.type || undefined,
+    ...(file.type ? { contentType: file.type } : {}),
   });
   if (error) throw new Error(error.message);
 
