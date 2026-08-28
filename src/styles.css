@@ -71,73 +71,78 @@
 }
 
 :root {
-  --radius: 0.5rem;
+  --radius: 0.875rem;
 
-  --background: oklch(0.19 0.048 259);
-  --foreground: oklch(0.96 0.008 250);
-  --surface: oklch(0.27 0.055 262);
-  --surface-2: oklch(0.32 0.07 264);
+  /* Paper & Amber — white base, warm sand surfaces, deep navy ink, amber accent. */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.24 0.038 262);
+  --surface: oklch(0.976 0.008 88);
+  --surface-2: oklch(0.951 0.016 88);
 
-  --paper: oklch(0.958 0.017 90);
-  --paper-2: oklch(0.925 0.028 89);
-  --paper-foreground: oklch(0.27 0.05 265);
+  --paper: oklch(0.985 0.006 88);
+  --paper-2: oklch(0.955 0.014 88);
+  --paper-foreground: oklch(0.24 0.038 262);
 
-  --card: oklch(0.245 0.05 261);
-  --card-foreground: oklch(0.96 0.008 250);
-  --popover: oklch(0.245 0.05 261);
-  --popover-foreground: oklch(0.96 0.008 250);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.24 0.038 262);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.24 0.038 262);
 
-  --primary: oklch(0.79 0.142 71);
-  --primary-foreground: oklch(0.2 0.05 262);
-  --primary-deep: oklch(0.67 0.13 62);
+  --primary: oklch(0.74 0.145 66);
+  --primary-foreground: oklch(0.22 0.04 262);
+  --primary-deep: oklch(0.63 0.135 55);
 
-  --secondary: oklch(0.86 0.126 176);
-  --secondary-foreground: oklch(0.2 0.05 262);
+  --secondary: oklch(0.55 0.105 214);
+  --secondary-foreground: oklch(0.99 0.004 250);
 
-  --muted: oklch(0.3 0.05 262);
-  --muted-foreground: oklch(0.75 0.028 254);
+  --muted: oklch(0.965 0.01 88);
+  --muted-foreground: oklch(0.48 0.024 262);
 
-  --accent: oklch(0.32 0.07 264);
-  --accent-foreground: oklch(0.96 0.008 250);
+  --accent: oklch(0.958 0.014 88);
+  --accent-foreground: oklch(0.24 0.038 262);
 
-  --destructive: oklch(0.63 0.185 34);
-  --destructive-foreground: oklch(0.97 0.01 90);
+  --destructive: oklch(0.56 0.19 28);
+  --destructive-foreground: oklch(0.99 0.004 90);
 
-  --warning: oklch(0.82 0.14 85);
-  --warning-foreground: oklch(0.2 0.05 262);
+  --warning: oklch(0.72 0.14 78);
+  --warning-foreground: oklch(0.22 0.04 262);
 
-  --code: oklch(0.16 0.04 260);
+  --code: oklch(0.22 0.036 262);
 
-  --success: oklch(0.78 0.14 160);
-  --success-foreground: oklch(0.2 0.05 262);
+  --success: oklch(0.58 0.12 160);
+  --success-foreground: oklch(0.99 0.004 250);
 
+  --border: oklch(0.24 0.038 262 / 12%);
+  --border-strong: oklch(0.24 0.038 262 / 24%);
+  --input: oklch(0.24 0.038 262 / 16%);
+  --ring: oklch(0.74 0.145 66);
 
-  --border: oklch(1 0 0 / 12%);
-  --border-strong: oklch(1 0 0 / 22%);
-  --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.79 0.142 71);
+  --chart-1: oklch(0.74 0.145 66);
+  --chart-2: oklch(0.55 0.105 214);
+  --chart-3: oklch(0.56 0.19 28);
+  --chart-4: oklch(0.55 0.13 285);
+  --chart-5: oklch(0.58 0.12 160);
 
-  --chart-1: oklch(0.79 0.142 71);
-  --chart-2: oklch(0.86 0.126 176);
-  --chart-3: oklch(0.63 0.185 34);
-  --chart-4: oklch(0.7 0.13 275);
-  --chart-5: oklch(0.78 0.14 160);
+  --sidebar: oklch(0.985 0.006 88);
+  --sidebar-foreground: oklch(0.24 0.038 262);
+  --sidebar-primary: oklch(0.74 0.145 66);
+  --sidebar-primary-foreground: oklch(0.22 0.04 262);
+  --sidebar-accent: oklch(0.958 0.014 88);
+  --sidebar-accent-foreground: oklch(0.24 0.038 262);
+  --sidebar-border: oklch(0.24 0.038 262 / 12%);
+  --sidebar-ring: oklch(0.74 0.145 66);
 
-  --sidebar: oklch(0.245 0.05 261);
-  --sidebar-foreground: oklch(0.94 0.01 250);
-  --sidebar-primary: oklch(0.79 0.142 71);
-  --sidebar-primary-foreground: oklch(0.2 0.05 262);
-  --sidebar-accent: oklch(0.32 0.07 264);
-  --sidebar-accent-foreground: oklch(0.96 0.008 250);
-  --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.79 0.142 71);
+  --shadow-soft: 0 1px 2px oklch(0.24 0.038 262 / 6%), 0 8px 24px -12px oklch(0.24 0.038 262 / 12%);
+  --shadow-lift: 0 2px 4px oklch(0.24 0.038 262 / 6%), 0 22px 44px -20px oklch(0.24 0.038 262 / 22%);
+  --gradient-warm: linear-gradient(135deg, oklch(0.74 0.145 66 / 14%), oklch(0.55 0.105 214 / 10%));
 }
 
-/* The platform is dark-first; .dark keeps shadcn variants coherent. */
+/* The platform is light-first; .dark keeps shadcn variants coherent. */
 .dark {
-  --background: oklch(0.19 0.048 259);
-  --foreground: oklch(0.96 0.008 250);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.24 0.038 262);
 }
+
 
 @layer base {
   * {
