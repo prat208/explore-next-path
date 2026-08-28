@@ -10,6 +10,8 @@ export type UploadSection = {
   description: string | null;
   category: string;
   sort_order: number;
+  entity_type: string | null;
+  entity_slug: string | null;
 };
 
 export type UploadFile = {
@@ -132,3 +134,47 @@ export async function deleteFile(id: string): Promise<void> {
   const { error } = await supabase.from("upload_files").delete().eq("id", id);
   if (error) throw new Error(error.message);
 }
+
+/* ------------------------------------------------- attaching to a content page */
+
+export type AttachTarget = { type: string; slug: string; title: string };
+
+const ATTACH_TABLES: { type: string; table: "roadmaps" | "articles" | "learning_paths" | "projects" | "careers" }[] = [
+  { type: "roadmap", table: "roadmaps" },
+  { type: "article", table: "articles" },
+  { type: "manual", table: "learning_paths" },
+  { type: "project", table: "projects" },
+  { type: "career", table: "careers" },
+];
+
+export const attachTargetsQuery = queryOptions({
+  queryKey: ["attach-targets"],
+  queryFn: async (): Promise<AttachTarget[]> => {
+    const results = await Promise.all(
+      ATTACH_TABLES.map(async ({ type, table }) => {
+        const { data } = await supabase.from(table).select("slug, title").order("title");
+        return (data ?? []).map((row) => ({ type, slug: String(row.slug), title: String(row.title) }));
+      }),
+    );
+    return results.flat();
+  },
+});
+
+/** Packs an editor attached to one specific page (roadmap, article, manual…). */
+export const attachedSectionsQuery = (entityType: string, entitySlug: string) =>
+  queryOptions({
+    queryKey: ["attached-sections", entityType, entitySlug],
+    queryFn: async (): Promise<(UploadSection & { files: UploadFile[] })[]> => {
+      const { data, error } = await supabase
+        .from("upload_sections")
+        .select("*, upload_files(*)")
+        .eq("entity_type", entityType)
+        .eq("entity_slug", entitySlug)
+        .order("sort_order", { ascending: true });
+      if (error) throw new Error(error.message);
+      return (data ?? []).map((row) => {
+        const { upload_files: files, ...section } = row as UploadSection & { upload_files: UploadFile[] };
+        return { ...section, files: [...(files ?? [])].sort((a, b) => a.sort_order - b.sort_order) };
+      });
+    },
+  });
