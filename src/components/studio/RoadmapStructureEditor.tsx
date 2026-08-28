@@ -7,6 +7,7 @@ import type { RoadmapEdge, RoadmapNode } from "@/lib/content";
 import { slugify } from "@/lib/studio";
 import { Field, inputClass } from "./fields";
 import { RoadmapCanvas } from "@/components/roadmap/RoadmapCanvas";
+import { AiRoadmapAssistant } from "./AiAssist";
 
 export function RoadmapStructureEditor({ roadmapId }: { roadmapId: string }) {
   const [newTitle, setNewTitle] = useState("");
@@ -114,6 +115,14 @@ export function RoadmapStructureEditor({ roadmapId }: { roadmapId: string }) {
 
   return (
     <div className="space-y-6">
+      <AiRoadmapAssistant
+        roadmapId={roadmapId}
+        onInserted={() => {
+          void nodes.refetch();
+          void edges.refetch();
+        }}
+      />
+
       <section className="rounded-xl border border-border bg-card">
         <header className="border-b border-border px-5 py-4">
           <h2 className="font-display text-lg font-semibold text-foreground">Diagram layout</h2>
