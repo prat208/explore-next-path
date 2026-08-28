@@ -116,6 +116,16 @@ export function FieldInput({
           </div>
         </Field>
       );
+    case "upload":
+      return (
+        <Field
+          label={field.label}
+          hint={field.hint ?? "Upload a video, PDF, image, audio, notebook or any file — readers get a purpose-built player for it"}
+          className={field.full ? "sm:col-span-2" : ""}
+        >
+          <UploadControl value={typeof value === "string" ? value : ""} onChange={onChange} />
+        </Field>
+      );
     case "boolean":
       return (
         <div className={cn("flex items-center gap-3 pt-6", field.full ? "sm:col-span-2" : "")}>
