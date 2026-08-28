@@ -39,7 +39,11 @@ function SectionPage() {
 
   return (
     <div>
-      <PageHeader eyebrow={categoryLabel(section.category)} title={section.title} description={section.subtitle ?? undefined}>
+      <PageHeader
+        eyebrow={categoryLabel(section.category)}
+        title={section.title}
+        {...(section.subtitle ? { description: section.subtitle } : {})}
+      >
         <p className="mt-5 font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
           {section.files.length} file{section.files.length === 1 ? "" : "s"} ·{" "}
           {prettySize(section.files.reduce((sum, file) => sum + (file.size ?? 0), 0)) || "ready to explore"}
