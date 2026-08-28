@@ -3,15 +3,26 @@ import { MediaBlock } from "@/components/blocks/MediaBlock";
 import { detectKind, type MediaKind } from "@/lib/upload";
 
 const RESIZE_SCRIPT = `<script>(function(){
+  var lastHeight=0,queued=false;
   function send(){
+    queued=false;
     var d=document.documentElement,b=document.body;
     var h=Math.max(d.scrollHeight,b?b.scrollHeight:0,d.offsetHeight);
-    parent.postMessage({__explorersEmbedHeight:h},'*');
+    if(h!==lastHeight){lastHeight=h;parent.postMessage({__explorersEmbedHeight:h},'*');}
   }
-  window.addEventListener('load',send);
-  window.addEventListener('resize',send);
-  document.addEventListener('click',function(){setTimeout(send,150);},true);
-  setInterval(send,600);
+  function schedule(){
+    if(!queued){queued=true;requestAnimationFrame(send);}
+  }
+  window.addEventListener('load',schedule);
+  window.addEventListener('resize',schedule);
+  document.addEventListener('click',function(){setTimeout(schedule,100);},true);
+  if(typeof ResizeObserver!=='undefined'){
+    new ResizeObserver(schedule).observe(document.documentElement);
+  }
+  if(typeof MutationObserver!=='undefined'){
+    new MutationObserver(schedule).observe(document.documentElement,{subtree:true,childList:true,attributes:true});
+  }
+  schedule();
 
   // Keep navigation inside this document: in-page anchors scroll here,
   // anything external opens in a new tab instead of loading a site in the frame.
@@ -147,7 +158,8 @@ function HtmlPage({ url, title }: { url: string; title: string }) {
       ref={frameRef}
       srcDoc={doc}
       title={title}
-      sandbox="allow-scripts allow-popups allow-forms allow-popups-to-escape-sandbox"
+      sandbox="allow-scripts allow-popups allow-forms allow-modals allow-downloads allow-presentation allow-popups-to-escape-sandbox"
+      allow="clipboard-write; fullscreen; autoplay"
       className="block w-full border-0 bg-transparent"
       style={{ height }}
     />
