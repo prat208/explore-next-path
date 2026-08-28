@@ -1,10 +1,10 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
-import { MediaBlock } from "@/components/blocks/MediaBlock";
-import { EmptyState, PageHeader, Pill } from "@/components/site/bits";
+import { EmptyState } from "@/components/site/bits";
+import { InlineFile } from "@/components/site/InlineFile";
 import { SECTION_CATEGORIES, categoryLabel, sectionQuery } from "@/lib/sections";
-import { detectKind, prettySize } from "@/lib/upload";
+
 
 export const Route = createFileRoute("/_site/section/$slug")({
   loader: async ({ context, params }) => {
