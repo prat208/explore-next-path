@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Compass } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import { captureReferralFromUrl } from "@/lib/referral";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -29,6 +30,10 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    captureReferralFromUrl();
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {

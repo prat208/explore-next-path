@@ -50,19 +50,22 @@ export function OnboardingDialog({
       valid: Boolean(a.goal),
     },
     {
-      title: "Where are you right now?",
-      hint: "Be honest — we tune the depth of everything to this.",
+      title: "Where are you right now? (choose 2)",
+      hint: "Pick your level and your current situation — we tune the depth of everything to this.",
       body: (
         <div className="space-y-4">
           <Choices options={LEVELS} value={a.level} onChange={(level) => setA({ ...a, level })} />
           <Choices options={STATUSES} value={a.status} onChange={(status) => setA({ ...a, status })} />
+          <p className="text-xs font-medium text-muted-foreground">
+            Pick 2 answers here — one level and one that describes you.
+          </p>
         </div>
       ),
       valid: Boolean(a.level && a.status),
     },
     {
-      title: "Pick the topics you want to explore",
-      hint: "Choose two or more. Your feed and updates follow these.",
+      title: "Pick at least 2 topics you want to explore",
+      hint: "Choose 2 or more to continue — your feed and updates follow these.",
       body: (
         <div className="flex flex-wrap gap-2">
           {INTERESTS.map((option) => {
@@ -88,6 +91,11 @@ export function OnboardingDialog({
               </button>
             );
           })}
+          <p className="mt-1 w-full text-xs font-medium text-muted-foreground">
+            {a.interests.length < 2
+              ? `Choose at least 2 to continue (${a.interests.length}/2 selected)`
+              : `${a.interests.length} selected`}
+          </p>
         </div>
       ),
       valid: a.interests.length >= 2,

@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { hrefFor } from "@/lib/content";
 import { useAuth } from "@/lib/useAuth";
 import { EmptyState, PageHeader, Pill } from "@/components/site/bits";
+import { ReferralGate } from "@/components/referral/ReferralGate";
 
 type SavedRow = { id: string; item_type: string; item_id: string; created_at: string };
 
@@ -79,6 +80,7 @@ function LibraryPage() {
         description="Your personal shelf across articles, roadmap steps, lessons, projects, tools and opportunities."
       />
       <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+        <ReferralGate label="sections" hidden={0} className="mb-8 mt-0" />
         {loading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : !user ? (

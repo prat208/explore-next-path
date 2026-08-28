@@ -15,6 +15,8 @@ import {
 } from "@/lib/personalize";
 import { useAuth } from "@/lib/useAuth";
 import { cn } from "@/lib/utils";
+import { ReferralGate } from "@/components/referral/ReferralGate";
+import { gateList, useAccess } from "@/lib/referral";
 
 export const Route = createFileRoute("/_site/updates")({
   head: () => ({
@@ -45,6 +47,7 @@ function UpdatesPage() {
   const prefs = useQuery(preferencesQuery(user?.id));
   const [kind, setKind] = useState<TechUpdate["kind"]>("news");
   const [busy, setBusy] = useState(false);
+  const { unlocked } = useAccess();
 
   async function run(force: boolean) {
     setBusy(true);
@@ -68,10 +71,11 @@ function UpdatesPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updates.isSuccess]);
 
-  const items = useMemo(() => {
+  const ranked = useMemo(() => {
     const list = (updates.data ?? []).filter((u) => u.kind === kind);
     return rankForInterests(list, prefs.data?.interests ?? []);
   }, [updates.data, kind, prefs.data?.interests]);
+  const items = gateList(ranked, unlocked);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
@@ -149,6 +153,8 @@ function UpdatesPage() {
           hint="The daily crawl runs when this page is opened — check back in a moment."
         />
       )}
+
+      <ReferralGate label="updates" hidden={ranked.length - items.length} />
     </div>
   );
 }
