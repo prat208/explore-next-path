@@ -1,3 +1,4 @@
+import { UploadedSections } from "@/components/site/UploadedSections";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -106,6 +107,7 @@ function ArticlesIndex() {
             <EmptyState title="Nothing matches those filters" hint="Try clearing the format or level." />
           </div>
         )}
+        <UploadedSections category="article" title="Uploaded articles" description="Documents, slides and interactive explainers you can read here." />
       </div>
     </>
   );

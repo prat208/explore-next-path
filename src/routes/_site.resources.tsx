@@ -1,3 +1,4 @@
+import { UploadedSections } from "@/components/site/UploadedSections";
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -181,6 +182,7 @@ function ResourcesPage() {
             ))}
           </ul>
         )}
+        <UploadedSections category="resource" title="Uploaded resources" description="Documents, notebooks and interactive files you can open here." />
       </div>
     </>
   );

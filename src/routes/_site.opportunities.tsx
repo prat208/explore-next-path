@@ -1,3 +1,4 @@
+import { UploadedSections } from "@/components/site/UploadedSections";
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -107,6 +108,7 @@ function OpportunitiesPage() {
             ))}
           </ul>
         )}
+        <UploadedSections category="opportunity" title="Uploaded opportunity packs" description="Forms, briefs and guides you can read right here." />
       </div>
     </>
   );
