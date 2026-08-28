@@ -10,7 +10,7 @@ import {
   roadmapsQuery,
   pathsQuery,
 } from "@/lib/content";
-import { CardShell, Pill, SectionHeading } from "@/components/site/bits";
+import { CardShell, MiniTree, Pill, SectionHeading } from "@/components/site/bits";
 
 export const Route = createFileRoute("/_site/")({
   head: () => ({
@@ -146,6 +146,15 @@ function Discover() {
                   </h3>
                   {lead.subtitle && <p className="mt-2 text-base text-muted-foreground">{lead.subtitle}</p>}
                 </div>
+                <div className="aurora mt-6 flex flex-1 items-end justify-between gap-4 rounded-xl border border-border p-5">
+                  <p className="max-w-xs font-display text-lg font-semibold leading-snug text-foreground">
+                    Start here, then follow the thread into a roadmap or a project.
+                  </p>
+                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-semibold text-primary">
+                    Read the story
+                    <ArrowRight className="h-4 w-4" aria-hidden />
+                  </span>
+                </div>
                 {lead.why_it_matters && (
                   <p className="mt-6 border-t border-border pt-4 text-sm text-muted-foreground">
                     <span className="eyebrow mr-2 text-secondary">Why it matters</span>
@@ -153,6 +162,7 @@ function Discover() {
                   </p>
                 )}
               </Link>
+
 
               <div className="grid gap-3">
                 {rest.slice(0, 4).map((article) => (
@@ -192,6 +202,7 @@ function Discover() {
             {roadmaps.slice(0, 6).map((roadmap) => (
               <CardShell key={roadmap.id} to="/roadmaps/$slug" params={{ slug: roadmap.slug }}>
                 <Pill tone="primary">{roadmap.difficulty}</Pill>
+                <MiniTree className="mt-3" />
                 <h3 className="mt-3 font-display text-lg font-semibold text-foreground">{roadmap.title}</h3>
                 {roadmap.description && (
                   <p className="mt-1.5 line-clamp-3 text-sm text-muted-foreground">{roadmap.description}</p>

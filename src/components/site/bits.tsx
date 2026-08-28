@@ -13,7 +13,7 @@ export function Pill({
   className?: string;
 }) {
   const tones = {
-    muted: "border-border bg-muted/50 text-muted-foreground",
+    muted: "border-border bg-muted text-muted-foreground",
     primary: "border-primary/40 bg-primary/10 text-primary",
     secondary: "border-secondary/40 bg-secondary/10 text-secondary",
     success: "border-success/40 bg-success/10 text-success",
@@ -76,14 +76,16 @@ export function PageHeader({
   children?: ReactNode;
 }) {
   return (
-    <header className="topo border-b border-border bg-surface/30">
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-        <p className="eyebrow text-primary">{eyebrow}</p>
-        <h1 className="mt-3 max-w-3xl font-display text-3xl font-bold tracking-tight text-foreground sm:text-[2.6rem]">
+    <header className="aurora relative overflow-hidden border-b border-border">
+      <div className="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+        <p className="eyebrow inline-flex items-center rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-primary">
+          {eyebrow}
+        </p>
+        <h1 className="mt-5 max-w-3xl font-display text-4xl font-bold tracking-tight text-foreground sm:text-[3.1rem] sm:leading-[1.05]">
           {title}
         </h1>
         {description && (
-          <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">{description}</p>
+          <p className="mt-5 max-w-2xl text-[1.05rem] leading-relaxed text-muted-foreground">{description}</p>
         )}
         {children && <div className="mt-6">{children}</div>}
       </div>
@@ -105,7 +107,7 @@ export function CardShell({
   className?: string;
 }) {
   const base = cn(
-    "hover-lift focus-ring block h-full rounded-xl border border-border bg-card p-5 text-left",
+    "hover-lift focus-ring group relative block h-full overflow-hidden rounded-2xl border border-border bg-card p-5 text-left",
     className,
   );
   if (href)
@@ -134,8 +136,33 @@ export function CardGridSkeleton({ count = 6 }: { count?: number }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="h-40 animate-pulse rounded-xl border border-border bg-card/60" />
+        <div key={i} className="h-40 animate-pulse rounded-2xl border border-border bg-surface" />
       ))}
     </div>
+  );
+}
+
+/** Tiny structural glyph that hints a roadmap is a branching diagram, not a list. */
+export function MiniTree({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 120 56"
+      aria-hidden
+      className={cn("h-12 w-full text-primary/70", className)}
+      fill="none"
+    >
+      <path
+        d="M14 28 C 40 28, 40 10, 66 10 M14 28 C 40 28, 40 28, 66 28 M14 28 C 40 28, 40 46, 66 46 M66 10 C 90 10, 90 28, 106 28 M66 46 C 90 46, 90 28, 106 28"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity="0.55"
+      />
+      <circle cx="14" cy="28" r="5" fill="currentColor" />
+      <rect x="60" y="5" width="12" height="10" rx="3" fill="currentColor" opacity="0.8" />
+      <rect x="60" y="23" width="12" height="10" rx="3" fill="currentColor" opacity="0.55" />
+      <rect x="60" y="41" width="12" height="10" rx="3" fill="currentColor" opacity="0.8" />
+      <circle cx="106" cy="28" r="5" className="text-secondary" fill="currentColor" opacity="0.9" />
+    </svg>
   );
 }
