@@ -163,13 +163,12 @@ export async function deleteFile(id: string): Promise<void> {
 
 export type AttachTarget = { type: string; slug: string; title: string };
 
-const ATTACH_TABLES: { type: string; table: "roadmaps" | "articles" | "learning_paths" | "projects" | "careers" }[] = [
+const ATTACH_TABLES: { type: string; table: "roadmaps" | "articles" | "careers" }[] = [
   { type: "roadmap", table: "roadmaps" },
   { type: "article", table: "articles" },
-  { type: "manual", table: "learning_paths" },
-  { type: "project", table: "projects" },
   { type: "career", table: "careers" },
 ];
+
 
 export const attachTargetsQuery = queryOptions({
   queryKey: ["attach-targets"],
