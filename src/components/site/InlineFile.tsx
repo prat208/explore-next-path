@@ -153,10 +153,12 @@ function HtmlPage({ url, title }: { url: string; title: string }) {
   const frameRef = useRef<HTMLIFrameElement | null>(null);
   const [doc, setDoc] = useState<string | null>(null);
   const [height, setHeight] = useState(900);
+  const [appMode, setAppMode] = useState(false);
 
   useEffect(() => {
     let alive = true;
     setDoc(null);
+    setAppMode(false);
     fetch(url)
       .then((r) => r.text())
       .then((body) => {
@@ -172,11 +174,11 @@ function HtmlPage({ url, title }: { url: string; title: string }) {
 
   useEffect(() => {
     function onMessage(event: MessageEvent) {
-      const payload = event.data as { __explorersEmbedHeight?: number } | null;
-      const next = payload && typeof payload.__explorersEmbedHeight === "number" ? payload.__explorersEmbedHeight : 0;
-      if (next > 0 && frameRef.current && event.source === frameRef.current.contentWindow) {
-        setHeight(Math.max(400, Math.min(next + 24, 40000)));
-      }
+      if (!frameRef.current || event.source !== frameRef.current.contentWindow) return;
+      const payload = event.data as { __explorersEmbedHeight?: number; __explorersEmbedMode?: string } | null;
+      if (payload?.__explorersEmbedMode === "app") setAppMode(true);
+      const next = typeof payload?.__explorersEmbedHeight === "number" ? payload.__explorersEmbedHeight : 0;
+      if (next > 0) setHeight(Math.max(400, Math.min(next + 24, 40000)));
     }
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
@@ -205,7 +207,8 @@ function HtmlPage({ url, title }: { url: string; title: string }) {
       sandbox="allow-scripts allow-popups allow-forms allow-modals allow-downloads allow-presentation allow-popups-to-escape-sandbox"
       allow="clipboard-write; fullscreen; autoplay"
       className="block w-full border-0 bg-transparent"
-      style={{ height }}
+      style={appMode ? { height: "calc(100vh - 5rem)" } : { height }}
     />
   );
+
 }
