@@ -105,12 +105,32 @@ function UploadsPage() {
         }}
         className="rounded-3xl border border-dashed border-primary/40 bg-primary/[0.04] px-6 py-10 text-center"
       >
-        <label className="focus-within:ring-primary/40 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground">
-          <UploadCloud className="h-4 w-4" />
-          {busy ? "Uploading…" : "Choose files"}
-          <input type="file" multiple className="sr-only" disabled={busy} onChange={(e) => void upload(e.target.files)} />
-        </label>
-        <p className="mt-3 text-xs text-muted-foreground">or drag and drop them anywhere in this box</p>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <label className="focus-within:ring-primary/40 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground">
+            <UploadCloud className="h-4 w-4" />
+            {busy ? "Uploading…" : "Choose files"}
+            <input type="file" multiple className="sr-only" disabled={busy} onChange={(e) => void upload(e.target.files)} />
+          </label>
+          <label className="focus-ring inline-flex cursor-pointer items-center gap-2 rounded-xl border border-border bg-background px-5 py-3 text-sm font-semibold text-foreground hover:bg-muted">
+            <FolderUp className="h-4 w-4" />
+            Choose a whole folder
+            <input
+              type="file"
+              multiple
+              className="sr-only"
+              disabled={busy}
+              // @ts-expect-error non-standard but supported directory picker
+              webkitdirectory=""
+              directory=""
+              onChange={(e) => void upload(e.target.files)}
+            />
+          </label>
+        </div>
+        <p className="mt-3 text-xs text-muted-foreground">
+          or drag and drop here. Uploading an <span className="font-mono">index.html</span> together with its{" "}
+          <span className="font-mono">style.css</span> / <span className="font-mono">app.js</span> (or the whole folder)
+          merges them into one self-contained interactive page — that&rsquo;s why a lone HTML file looks unstyled.
+        </p>
       </div>
 
       {loading ? (
