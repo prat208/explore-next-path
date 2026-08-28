@@ -10,6 +10,7 @@ export type UploadSection = {
   description: string | null;
   category: string;
   sort_order: number;
+  published: boolean;
   entity_type: string | null;
   entity_slug: string | null;
 };
@@ -26,18 +27,19 @@ export type UploadFile = {
   sort_order: number;
 };
 
+/** Where an upload appears on the public site. */
 export const SECTION_CATEGORIES = [
-  { value: "roadmap", label: "Roadmap" },
-  { value: "article", label: "Article" },
-  { value: "manual", label: "Learning manual" },
-  { value: "project", label: "Project" },
-  { value: "career", label: "Career" },
-  { value: "resource", label: "Resource pack" },
+  { value: "roadmap", label: "Roadmap", listing: "/roadmaps" },
+  { value: "article", label: "Article", listing: "/articles" },
+  { value: "resource", label: "Resource", listing: "/resources" },
+  { value: "opportunity", label: "Opportunity", listing: "/opportunities" },
+  { value: "career", label: "Career", listing: "/careers" },
 ] as const;
 
 export function categoryLabel(value: string): string {
-  return SECTION_CATEGORIES.find((c) => c.value === value)?.label ?? "Resource pack";
+  return SECTION_CATEGORIES.find((c) => c.value === value)?.label ?? "Upload";
 }
+
 
 /* ------------------------------------------------------------------- reads */
 
