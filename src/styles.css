@@ -199,15 +199,25 @@
 
 /* Faint topographic grid used behind hero and section bands. */
 @utility topo {
+  background-color: var(--color-surface);
   background-image:
-    linear-gradient(to right, oklch(1 0 0 / 5%) 1px, transparent 1px),
-    linear-gradient(to bottom, oklch(1 0 0 / 5%) 1px, transparent 1px);
+    linear-gradient(to right, oklch(0.24 0.038 262 / 5%) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0.24 0.038 262 / 5%) 1px, transparent 1px);
   background-size: 64px 64px;
+}
+
+/* Warm ambient wash for hero / feature bands. */
+@utility aurora {
+  background-color: var(--color-background);
+  background-image:
+    radial-gradient(60% 70% at 12% 0%, oklch(0.74 0.145 66 / 16%), transparent 62%),
+    radial-gradient(55% 65% at 92% 12%, oklch(0.55 0.105 214 / 12%), transparent 60%);
 }
 
 /* Dotted canvas backdrop for the interactive roadmap diagram. */
 @utility roadmap-grid {
-  background-image: radial-gradient(oklch(1 0 0 / 9%) 1px, transparent 1px);
+  background-color: var(--color-surface);
+  background-image: radial-gradient(oklch(0.24 0.038 262 / 14%) 1px, transparent 1px);
   background-size: 22px 22px;
 }
 
@@ -216,13 +226,23 @@
   color: var(--color-paper-foreground);
 }
 
+@utility card-soft {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+}
+
 @utility hover-lift {
+  box-shadow: var(--shadow-soft);
   transition:
-    transform 180ms ease,
-    border-color 180ms ease,
-    background-color 180ms ease;
+    transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 200ms ease,
+    border-color 200ms ease,
+    background-color 200ms ease;
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lift);
     border-color: var(--color-border-strong);
   }
 }
@@ -233,3 +253,4 @@
     outline-offset: 2px;
   }
 }
+
