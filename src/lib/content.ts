@@ -423,7 +423,7 @@ export async function siteSearch(term: string): Promise<SearchGroup[]> {
   if (!q) return [];
   const like = `%${q}%`;
 
-  const [articles, resources, tools, projects, roadmaps, nodes, paths, careers, opportunities] =
+  const [articles, resources, tools, roadmaps, nodes, careers, opportunities] =
     await Promise.all([
       supabase
         .from("articles")
@@ -444,12 +444,6 @@ export async function siteSearch(term: string): Promise<SearchGroup[]> {
         .or(`name.ilike.${like},tagline.ilike.${like},description.ilike.${like}`)
         .limit(8),
       supabase
-        .from("projects")
-        .select("id,slug,title,outcome,difficulty")
-        .eq("status", "published")
-        .or(`title.ilike.${like},problem.ilike.${like},outcome.ilike.${like}`)
-        .limit(8),
-      supabase
         .from("roadmaps")
         .select("id,slug,title,description,difficulty")
         .eq("status", "published")
@@ -458,12 +452,6 @@ export async function siteSearch(term: string): Promise<SearchGroup[]> {
       supabase
         .from("roadmap_nodes")
         .select("id,slug,title,description,roadmap_id")
-        .or(`title.ilike.${like},description.ilike.${like}`)
-        .limit(6),
-      supabase
-        .from("learning_paths")
-        .select("id,slug,title,description,difficulty")
-        .eq("status", "published")
         .or(`title.ilike.${like},description.ilike.${like}`)
         .limit(6),
       supabase
