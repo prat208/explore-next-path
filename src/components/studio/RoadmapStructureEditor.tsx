@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { RoadmapEdge, RoadmapNode } from "@/lib/content";
 import { slugify } from "@/lib/studio";
-import { Field, inputClass } from "./fields";
+import { Field, UploadControl, inputClass } from "./fields";
 import { RoadmapCanvas } from "@/components/roadmap/RoadmapCanvas";
 import { AiRoadmapAssistant } from "./AiAssist";
 
