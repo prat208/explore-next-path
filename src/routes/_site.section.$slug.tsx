@@ -40,7 +40,7 @@ function SectionPage() {
 
   return (
     <>
-      <PageHeader eyebrow={categoryLabel(section.category)} title={section.title} description={section.subtitle ?? undefined} />
+      <PageHeader eyebrow={categoryLabel(section.category)} title={section.title} description={section.subtitle ?? "Files, diagrams and documents you can open right here."} />
 
       <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
         {listing && (
@@ -58,7 +58,7 @@ function SectionPage() {
 
         {section.files.length === 0 ? (
           <div className="mt-8">
-            <EmptyState title="Nothing here yet" description="Files for this section are on the way." />
+            <EmptyState title="Nothing here yet" hint="Files for this section are on the way." />
           </div>
         ) : (
           <div className="mt-10 space-y-12">

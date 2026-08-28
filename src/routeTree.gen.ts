@@ -23,6 +23,7 @@ import { Route as SiteCareersIndexRouteImport } from './routes/_site.careers.ind
 import { Route as SiteCareersSlugRouteImport } from './routes/_site.careers.$slug'
 import { Route as SiteRoadmapsIndexRouteImport } from './routes/_site.roadmaps.index'
 import { Route as SiteRoadmapsSlugRouteImport } from './routes/_site.roadmaps.$slug'
+import { Route as SiteSectionSlugRouteImport } from './routes/_site.section.$slug'
 import { Route as SiteStudioIndexRouteImport } from './routes/_site.studio.index'
 import { Route as SiteStudioCollectionIndexRouteImport } from './routes/_site.studio.$collection.index'
 import { Route as SiteStudioCollectionIdRouteImport } from './routes/_site.studio.$collection.$id'
@@ -96,6 +97,11 @@ const SiteRoadmapsSlugRoute = SiteRoadmapsSlugRouteImport.update({
   path: '/roadmaps/$slug',
   getParentRoute: () => SiteRoute,
 } as any)
+const SiteSectionSlugRoute = SiteSectionSlugRouteImport.update({
+  id: '/section/$slug',
+  path: '/section/$slug',
+  getParentRoute: () => SiteRoute,
+} as any)
 const SiteStudioIndexRoute = SiteStudioIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/articles/$slug': typeof SiteArticlesSlugRoute
   '/careers/$slug': typeof SiteCareersSlugRoute
   '/roadmaps/$slug': typeof SiteRoadmapsSlugRoute
+  '/section/$slug': typeof SiteSectionSlugRoute
   '/articles/': typeof SiteArticlesIndexRoute
   '/careers/': typeof SiteCareersIndexRoute
   '/roadmaps/': typeof SiteRoadmapsIndexRoute
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/articles/$slug': typeof SiteArticlesSlugRoute
   '/careers/$slug': typeof SiteCareersSlugRoute
   '/roadmaps/$slug': typeof SiteRoadmapsSlugRoute
+  '/section/$slug': typeof SiteSectionSlugRoute
   '/articles': typeof SiteArticlesIndexRoute
   '/careers': typeof SiteCareersIndexRoute
   '/roadmaps': typeof SiteRoadmapsIndexRoute
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/_site/articles/$slug': typeof SiteArticlesSlugRoute
   '/_site/careers/$slug': typeof SiteCareersSlugRoute
   '/_site/roadmaps/$slug': typeof SiteRoadmapsSlugRoute
+  '/_site/section/$slug': typeof SiteSectionSlugRoute
   '/_site/articles/': typeof SiteArticlesIndexRoute
   '/_site/careers/': typeof SiteCareersIndexRoute
   '/_site/roadmaps/': typeof SiteRoadmapsIndexRoute
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/articles/$slug'
     | '/careers/$slug'
     | '/roadmaps/$slug'
+    | '/section/$slug'
     | '/articles/'
     | '/careers/'
     | '/roadmaps/'
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/articles/$slug'
     | '/careers/$slug'
     | '/roadmaps/$slug'
+    | '/section/$slug'
     | '/articles'
     | '/careers'
     | '/roadmaps'
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/_site/articles/$slug'
     | '/_site/careers/$slug'
     | '/_site/roadmaps/$slug'
+    | '/_site/section/$slug'
     | '/_site/articles/'
     | '/_site/careers/'
     | '/_site/roadmaps/'
@@ -330,6 +342,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteRoadmapsSlugRouteImport
       parentRoute: typeof SiteRoute
     }
+    '/_site/section/$slug': {
+      id: '/_site/section/$slug'
+      path: '/section/$slug'
+      fullPath: '/section/$slug'
+      preLoaderRoute: typeof SiteSectionSlugRouteImport
+      parentRoute: typeof SiteRoute
+    }
     '/_site/studio/': {
       id: '/_site/studio/'
       path: '/'
@@ -380,6 +399,7 @@ interface SiteRouteChildren {
   SiteArticlesSlugRoute: typeof SiteArticlesSlugRoute
   SiteCareersSlugRoute: typeof SiteCareersSlugRoute
   SiteRoadmapsSlugRoute: typeof SiteRoadmapsSlugRoute
+  SiteSectionSlugRoute: typeof SiteSectionSlugRoute
   SiteArticlesIndexRoute: typeof SiteArticlesIndexRoute
   SiteCareersIndexRoute: typeof SiteCareersIndexRoute
   SiteRoadmapsIndexRoute: typeof SiteRoadmapsIndexRoute
@@ -395,6 +415,7 @@ const SiteRouteChildren: SiteRouteChildren = {
   SiteArticlesSlugRoute: SiteArticlesSlugRoute,
   SiteCareersSlugRoute: SiteCareersSlugRoute,
   SiteRoadmapsSlugRoute: SiteRoadmapsSlugRoute,
+  SiteSectionSlugRoute: SiteSectionSlugRoute,
   SiteArticlesIndexRoute: SiteArticlesIndexRoute,
   SiteCareersIndexRoute: SiteCareersIndexRoute,
   SiteRoadmapsIndexRoute: SiteRoadmapsIndexRoute,
