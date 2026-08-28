@@ -149,7 +149,17 @@ function RecordEditor() {
         </div>
       </section>
 
-      {!isNew && (
+      {isNew ? (
+        <p className="mt-6 rounded-2xl border border-primary/30 bg-primary/5 p-4 text-sm text-foreground">
+          Click <strong>Create</strong> above to unlock the rest of this editor —
+          {collection.structure === "roadmap"
+            ? " the interactive step canvas, where each step gets its own video/PDF/file upload,"
+            : collection.structure === "lessons"
+              ? " the lesson builder with per-lesson uploads and interactive blocks,"
+              : " the block builder with “Upload anything” media blocks,"}{" "}
+          plus knowledge-graph links.
+        </p>
+      ) : (
         <div className="mt-8 space-y-8">
           {collection.blockOwner && <BlockEditor ownerType={collection.blockOwner} ownerId={id} />}
           {collection.structure === "roadmap" && <RoadmapStructureEditor roadmapId={id} />}
