@@ -1138,6 +1138,8 @@ export type Database = {
           category: string
           created_at: string
           description: string | null
+          entity_slug: string | null
+          entity_type: string | null
           id: string
           slug: string
           sort_order: number
@@ -1149,6 +1151,8 @@ export type Database = {
           category?: string
           created_at?: string
           description?: string | null
+          entity_slug?: string | null
+          entity_type?: string | null
           id?: string
           slug: string
           sort_order?: number
@@ -1160,6 +1164,8 @@ export type Database = {
           category?: string
           created_at?: string
           description?: string | null
+          entity_slug?: string | null
+          entity_type?: string | null
           id?: string
           slug?: string
           sort_order?: number
