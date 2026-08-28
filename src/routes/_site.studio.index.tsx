@@ -120,7 +120,7 @@ function UploadsPage() {
   );
 }
 
-type SectionWithFiles = NonNullable<ReturnType<typeof useQuery<Awaited<ReturnType<typeof sectionsQuery.queryFn>>>>["data"]>[number];
+type SectionWithFiles = UploadSection & { files: UploadFile[] };
 
 function SectionPanel({ section, onChanged }: { section: SectionWithFiles; onChanged: () => void }) {
   const [busy, setBusy] = useState(false);
