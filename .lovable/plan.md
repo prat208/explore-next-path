@@ -1,52 +1,41 @@
-# Simple upload → run → publish flow
+# Uploads live inside the section you choose
 
-Goal: in Studio you upload any file (PDF, HTML/CSS/JS, video, audio, image, notebook, code, zip), give it a title, choose the section it belongs to, see exactly how a learner will see it, then publish it so it shows on that article / roadmap / manual / project / career page.
+Right now every upload ends up on a separate `/files` page. That's the mistake. New behaviour: the category you pick in Studio *is* where the upload appears on the site.
 
-Most of this pipeline already exists (sections, uploads, learner-style previews, "Show these files on" linking, `/files/<section>` pages). This plan fills the four real gaps.
+## 1. Pick a section → the upload lands there
 
-## 1. Title the file while uploading
+In Studio you name the upload and choose its section: **Roadmap**, **Article**, **Resource**, **Opportunity**, or **Career**.
 
-Right now the file's raw filename becomes its title. Change the section uploader to a small staging step:
+- Choose **Roadmap** → it shows up as a card on `/roadmaps`, next to the existing roadmaps, and opens its own page with the file running inside (PDF reader, live HTML page, video player, code viewer — by type).
+- Choose **Article** → it appears in the `/articles` list and opens as a readable page.
+- Same for Resource, Opportunity, Career.
+- Optionally it can still be attached *inside* an existing roadmap/article page instead of standing on its own — that choice stays.
 
-- Pick or drop files → they appear in a "ready to upload" list.
-- Each row has a **Title** input (pre-filled from the filename, editable) and an optional one-line note.
-- One **Upload** button saves them all in order, with the titles you typed.
+No more "everything under Files".
 
-## 2. Real web output for HTML + CSS + JS
+## 2. Remove the clutter
 
-Today CSS/JS only get merged when selected in the same pick. Improvements:
+Delete these from the site navigation and remove their pages/links:
 
-- Selecting a whole folder or multiple files keeps working (index.html + style.css + app.js merged into one self-contained page).
-- If you upload `style.css` / `app.js` later into a section that already has an HTML file, Studio offers **"Attach to <page>.html and rebuild"** so the page is recompiled with the new assets instead of being stored as a loose code file.
-- The compiled page renders in a sandboxed live frame (auto-height, Full screen) in both Studio preview and the learner view — that is the "compiled web output".
-- Loose `.css` / `.js` you deliberately want shown as code still render in the code viewer with copy.
+- **Files** (its content now lives in Roadmaps / Articles / etc.)
+- **Learn**
+- **Projects**
+- **Discover** as a nav item (the logo still goes home)
 
-## 3. Per-file type handling (already mostly in place, verified end to end)
+Navigation becomes: Articles · Roadmaps · Resources · Opportunities · Careers.
 
-| Upload | What the learner gets |
-| --- | --- |
-| PDF | full-height in-page reader (no download needed) |
-| HTML(+CSS/JS) | live sandboxed running page, expand to full screen |
-| Video / YouTube link | player with chapter jump rail |
-| Audio | waveform player |
-| Image | contained visual |
-| .ipynb / code | scrollable source panel with copy |
-| zip / other | clean open-or-download card |
+Any card, home-page block, or "Continue exploring" link pointing at the removed pages is removed too, so nothing dead-ends.
 
-Each of these will be checked in the browser after the change, not assumed.
+## 3. Studio stays one simple screen
 
-## 4. Publish control
-
-Sections currently go live the moment they exist. Add an explicit state:
-
-- New sections start as **Draft** — visible only in Studio.
-- A **Publish** switch on each section; published sections appear on `/files` and inside whatever page you attached them to.
-- Draft sections show a "Draft — only you can see this" badge in Studio.
+- Name it, choose the section, drop the files.
+- Each file renders right there exactly as a learner will see it (live HTML output, working PDF, player, code panel).
+- One **Publish** switch per upload: draft = only you see it, published = it shows in its section on the site.
 
 ## Technical notes
 
-- Migration: add `published boolean not null default false` to `upload_sections`, plus `note` on `upload_files` if missing; update RLS so anon reads only published sections, editors read all. Grants included.
-- `src/lib/sections.ts`: filter public queries by `published`, add `publishSection` / `unpublishSection`, and a `rebuildHtmlBundle` helper.
-- `src/lib/upload.ts`: expose bundling so it can be re-run against an already-stored HTML file plus newly uploaded assets.
-- `src/routes/_site.studio.index.tsx`: staging list with titles, publish switch, rebuild action.
-- No AI features are added anywhere; Studio stays the single upload page.
+- `upload_sections` gains `published boolean default false`; public reads filter on it (RLS + grants updated in the same migration).
+- Listing routes `_site.roadmaps.index.tsx`, `_site.articles.index.tsx`, `_site.resources.tsx`, `_site.opportunities.tsx`, `_site.careers.index.tsx` also read published sections of their category and render them as cards linking to the section reader.
+- The section reader replaces `_site.files.$slug.tsx` at a neutral path so links from any listing work; `_site.files.index.tsx`, `_site.learn.*`, `_site.projects.*` route files are deleted.
+- `NAV` in `src/routes/_site.tsx` trimmed; home page sections referencing learn/projects removed.
+- `src/routes/_site.studio.index.tsx`: per-upload title, section select, publish switch, learner-accurate preview. No AI features.
