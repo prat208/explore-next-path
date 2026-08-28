@@ -1,6 +1,5 @@
-import { UploadedSections } from "@/components/site/UploadedSections";
 import { createFileRoute } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { ExternalLink, Star } from "lucide-react";
 import { resourcesQuery, toolsQuery } from "@/lib/content";
@@ -10,6 +9,8 @@ import { cn } from "@/lib/utils";
 import { ReferralGate } from "@/components/referral/ReferralGate";
 import { isLocked, useAccess } from "@/lib/referral";
 import { LockedCard } from "@/components/referral/LockedCard";
+import { UploadedSectionCard } from "@/components/site/UploadedSectionCard";
+import { publishedSectionsQuery } from "@/lib/sections";
 
 export const Route = createFileRoute("/_site/resources")({
   head: () => ({
@@ -36,6 +37,9 @@ export const Route = createFileRoute("/_site/resources")({
 function ResourcesPage() {
   const resources = useSuspenseQuery(resourcesQuery()).data;
   const tools = useSuspenseQuery(toolsQuery()).data;
+  const uploads = (useQuery(publishedSectionsQuery("resource")).data ?? []).filter(
+    (section) => section.files.length > 0,
+  );
   const [tab, setTab] = useState<"resources" | "tools">("resources");
   const [category, setCategory] = useState("all");
   const [freeOnly, setFreeOnly] = useState(false);
@@ -52,8 +56,10 @@ function ResourcesPage() {
   const matchingTools = tools.filter((t) => category === "all" || t.category === category);
   const filteredResources = matchingResources;
   const filteredTools = matchingTools;
+  const visibleUploads = category === "all" && !freeOnly ? uploads : [];
   const countLocked = (n: number) => (unlocked ? 0 : Math.max(0, n - 1));
-  const hiddenCount = tab === "resources" ? countLocked(matchingResources.length) : countLocked(matchingTools.length);
+  const resourceEntryCount = visibleUploads.length + matchingResources.length;
+  const hiddenCount = tab === "resources" ? countLocked(resourceEntryCount) : countLocked(matchingTools.length);
 
   return (
     <>
@@ -115,13 +121,20 @@ function ResourcesPage() {
         </div>
 
         {tab === "resources" ? (
-          filteredResources.length === 0 ? (
+          resourceEntryCount === 0 ? (
             <EmptyState title="No resources match those filters" hint="Try widening the category or cost filter." />
           ) : (
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {visibleUploads.map((section, index) => (
+                <li key={section.id} className="h-full">
+                  <LockedCard locked={isLocked(unlocked, index)}>
+                    <UploadedSectionCard section={section} />
+                  </LockedCard>
+                </li>
+              ))}
               {filteredResources.map((resource, index) => (
                 <li key={resource.id} className="h-full">
-                  <LockedCard locked={isLocked(unlocked, index)}>
+                  <LockedCard locked={isLocked(unlocked, visibleUploads.length + index)}>
                   <div className="flex h-full flex-col rounded-xl border border-border bg-card p-5">
                   <div className="flex flex-wrap items-center gap-2">
                     <Pill tone="primary">{resource.level}</Pill>
@@ -199,7 +212,6 @@ function ResourcesPage() {
           </ul>
         )}
         <ReferralGate label={tab === "resources" ? "resources" : "tools"} hidden={hiddenCount} />
-        <UploadedSections category="resource" title="Uploaded resources" description="Documents, notebooks and interactive files you can open here." />
       </div>
     </>
   );
