@@ -86,6 +86,36 @@ export function FieldInput({
           className={field.full ? "sm:col-span-2" : ""}
         />
       );
+    case "html":
+      return (
+        <Field
+          label={field.label}
+          hint={field.hint ?? "Paste HTML/CSS/JS, or upload your own .html file — it renders as a live interactive block"}
+          className={field.full ? "sm:col-span-2" : ""}
+        >
+          <div className="space-y-2">
+            <input
+              type="file"
+              accept=".html,.htm,.svg,text/html,image/svg+xml"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => onChange(String(reader.result ?? ""));
+                reader.readAsText(file);
+              }}
+              className="focus-ring w-full rounded-lg border border-dashed border-border bg-background px-3 py-2 text-xs text-muted-foreground file:mr-3 file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-primary-foreground"
+            />
+            <textarea
+              rows={field.rows ?? 10}
+              value={typeof value === "string" ? value : ""}
+              onChange={(e) => onChange(e.target.value)}
+              placeholder="<div class=\"tree\">…</div>"
+              className={cn(inputClass, "resize-y font-mono text-[0.78rem] leading-relaxed")}
+            />
+          </div>
+        </Field>
+      );
     case "boolean":
       return (
         <div className={cn("flex items-center gap-3 pt-6", field.full ? "sm:col-span-2" : "")}>

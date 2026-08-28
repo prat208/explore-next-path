@@ -56,6 +56,18 @@ export const BLOCK_SPECS: BlockSpec[] = [
     fields: [f("url", "Image URL", "text"), f("alt", "Alt text", "text"), f("caption", "Caption", "text")],
   },
   {
+    type: "embed",
+    label: "Interactive file / diagram (your own HTML)",
+    group: "Media",
+    fields: [
+      f("title", "Panel label", "text", { full: false }),
+      f("height", "Minimum height (px)", "number", { full: false }),
+      f("html", "Your HTML file or markup", "html", { rows: 14 }),
+      f("url", "…or embed a live URL instead", "text"),
+      f("caption", "Caption", "text"),
+    ],
+  },
+  {
     type: "code",
     label: "Code",
     group: "Technical",
