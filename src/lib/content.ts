@@ -329,12 +329,9 @@ const TABLE_FOR: Record<string, { table: string; title: string; sub: string }> =
   article: { table: "articles", title: "title", sub: "excerpt" },
   resource: { table: "resources", title: "title", sub: "description" },
   tool: { table: "tools", title: "name", sub: "tagline" },
-  project: { table: "projects", title: "title", sub: "outcome" },
   roadmap: { table: "roadmaps", title: "title", sub: "description" },
-  learning_path: { table: "learning_paths", title: "title", sub: "description" },
   career: { table: "careers", title: "title", sub: "overview" },
   opportunity: { table: "opportunities", title: "title", sub: "description" },
-  challenge: { table: "challenges", title: "title", sub: "statement" },
 };
 
 export function hrefFor(type: string, slug: string, extra?: string): string {
@@ -345,20 +342,14 @@ export function hrefFor(type: string, slug: string, extra?: string): string {
       return `/resources?highlight=${slug}`;
     case "tool":
       return `/resources?tool=${slug}`;
-    case "project":
-      return `/projects/${slug}`;
     case "roadmap":
       return `/roadmaps/${slug}`;
     case "roadmap_node":
       return `/roadmaps/${extra ?? ""}?node=${slug}`;
-    case "learning_path":
-      return `/learn/${slug}`;
     case "career":
       return `/careers/${slug}`;
     case "opportunity":
       return `/opportunities?highlight=${slug}`;
-    case "challenge":
-      return `/projects?challenge=${slug}`;
     default:
       return "/";
   }
@@ -539,32 +530,6 @@ export async function siteSearch(term: string): Promise<SearchGroup[]> {
         subtitle: r["description"] ?? null,
         href: hrefFor("resource", r["slug"]!),
         meta: r["level"] ?? null,
-      })),
-    },
-    {
-      type: "learning_path",
-      label: "Learning paths",
-      items: ((paths.data ?? []) as Record<string, string>[]).map((p) => ({
-        relation: "learn",
-        type: "learning_path" as const,
-        id: p["id"]!,
-        title: p["title"]!,
-        subtitle: p["description"] ?? null,
-        href: hrefFor("learning_path", p["slug"]!),
-        meta: p["difficulty"] ?? null,
-      })),
-    },
-    {
-      type: "project",
-      label: "Projects to build",
-      items: ((projects.data ?? []) as Record<string, string>[]).map((p) => ({
-        relation: "build",
-        type: "project" as const,
-        id: p["id"]!,
-        title: p["title"]!,
-        subtitle: p["outcome"] ?? null,
-        href: hrefFor("project", p["slug"]!),
-        meta: p["difficulty"] ?? null,
       })),
     },
     {
