@@ -1,10 +1,13 @@
-import { UploadedSections } from "@/components/site/UploadedSections";
 import { createFileRoute } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
+import { FileStack } from "lucide-react";
 import { roadmapsQuery } from "@/lib/content";
 import { CardShell, MiniTree, PageHeader, Pill } from "@/components/site/bits";
 import { ReferralGate } from "@/components/referral/ReferralGate";
-import { gateList, useAccess } from "@/lib/referral";
+import { LockedCard } from "@/components/referral/LockedCard";
+import { isLocked, useAccess } from "@/lib/referral";
+import { publishedSectionsQuery } from "@/lib/sections";
+import { detectKind } from "@/lib/upload";
 
 export const Route = createFileRoute("/_site/roadmaps/")({
   head: () => ({
@@ -26,10 +29,40 @@ export const Route = createFileRoute("/_site/roadmaps/")({
   component: RoadmapsIndex,
 });
 
+type Entry =
+  | { kind: "upload"; id: string; slug: string; title: string; description: string | null; tags: string[]; files: number }
+  | { kind: "roadmap"; id: string; slug: string; title: string; description: string | null; difficulty: string; hours: number | null };
+
 function RoadmapsIndex() {
-  const all = useSuspenseQuery(roadmapsQuery()).data;
+  const authored = useSuspenseQuery(roadmapsQuery()).data;
+  const uploaded = useQuery(publishedSectionsQuery("roadmap")).data ?? [];
   const { unlocked } = useAccess();
-  const roadmaps = gateList(all, unlocked);
+
+  // Uploaded roadmaps come first — they are the real thing; authored ones are the demo set.
+  const entries: Entry[] = [
+    ...uploaded
+      .filter((s) => s.files.length > 0)
+      .map((s) => ({
+        kind: "upload" as const,
+        id: s.id,
+        slug: s.slug,
+        title: s.title,
+        description: s.subtitle ?? s.description,
+        tags: Array.from(new Set(s.files.map((f) => detectKind(f.title, f.mime ?? "")))).slice(0, 3),
+        files: s.files.length,
+      })),
+    ...authored.map((r) => ({
+      kind: "roadmap" as const,
+      id: r.id,
+      slug: r.slug,
+      title: r.title,
+      description: r.description,
+      difficulty: r.difficulty,
+      hours: r.estimated_hours ?? null,
+    })),
+  ];
+
+  const lockedCount = entries.filter((_, i) => isLocked(unlocked, i)).length;
 
   return (
     <>
@@ -40,25 +73,46 @@ function RoadmapsIndex() {
       />
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {roadmaps.map((roadmap) => (
-            <CardShell key={roadmap.id} to="/roadmaps/$slug" params={{ slug: roadmap.slug }}>
-              <div className="flex flex-wrap items-center gap-2">
-                <Pill tone="primary">{roadmap.difficulty}</Pill>
-                {roadmap.estimated_hours && <Pill>~{roadmap.estimated_hours}h</Pill>}
-              </div>
-              <h2 className="mt-3 font-display text-xl font-semibold text-foreground">{roadmap.title}</h2>
-              {roadmap.description && (
-                <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{roadmap.description}</p>
+          {entries.map((entry, index) => (
+            <LockedCard key={entry.id} locked={isLocked(unlocked, index)}>
+              {entry.kind === "upload" ? (
+                <CardShell to="/section/$slug" params={{ slug: entry.slug }}>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {entry.tags.map((tag) => (
+                      <Pill key={tag}>{tag}</Pill>
+                    ))}
+                    <Pill tone="primary">
+                      {entry.files} file{entry.files === 1 ? "" : "s"}
+                    </Pill>
+                  </div>
+                  <h2 className="mt-3 font-display text-xl font-semibold text-foreground">{entry.title}</h2>
+                  {entry.description && (
+                    <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{entry.description}</p>
+                  )}
+                  <div className="mt-5 flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-muted-foreground">
+                    <FileStack className="h-4 w-4 text-primary" aria-hidden /> Opens inside Explorers
+                  </div>
+                </CardShell>
+              ) : (
+                <CardShell to="/roadmaps/$slug" params={{ slug: entry.slug }}>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Pill tone="primary">{entry.difficulty}</Pill>
+                    {entry.hours && <Pill>~{entry.hours}h</Pill>}
+                  </div>
+                  <h2 className="mt-3 font-display text-xl font-semibold text-foreground">{entry.title}</h2>
+                  {entry.description && (
+                    <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{entry.description}</p>
+                  )}
+                  <div className="mt-5 rounded-xl border border-border bg-surface px-4 py-3">
+                    <MiniTree />
+                    <p className="eyebrow mt-2 text-muted-foreground">Interactive tree diagram</p>
+                  </div>
+                </CardShell>
               )}
-              <div className="mt-5 rounded-xl border border-border bg-surface px-4 py-3">
-                <MiniTree />
-                <p className="eyebrow mt-2 text-muted-foreground">Interactive tree diagram</p>
-              </div>
-            </CardShell>
+            </LockedCard>
           ))}
         </div>
-        <ReferralGate label="roadmaps" hidden={all.length - roadmaps.length} />
-        <UploadedSections category="roadmap" title="Uploaded roadmaps" description="Full roadmap packs: diagrams, PDFs and interactive files." />
+        <ReferralGate label="roadmaps" hidden={lockedCount} />
       </div>
     </>
   );

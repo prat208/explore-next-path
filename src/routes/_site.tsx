@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Compass, Menu, Search, X } from "lucide-react";
 import { useAuth } from "@/lib/useAuth";
 import { AssistantDock } from "@/components/assistant/AssistantDock";
+import { ReferralDialog } from "@/components/referral/LockedCard";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -171,6 +172,7 @@ function SiteLayout() {
       </main>
 
       <AssistantDock />
+      <ReferralDialog />
 
       <footer className="border-t border-border bg-surface/30">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
