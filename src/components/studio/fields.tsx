@@ -314,7 +314,7 @@ export function UploadControl({
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
-          void pick(e.dataTransfer.files?.[0]);
+          void pick(e.dataTransfer.files);
         }}
         className="rounded-xl border border-dashed border-border bg-background px-3 py-3"
       >
@@ -326,7 +326,8 @@ export function UploadControl({
               type="file"
               className="sr-only"
               disabled={busy}
-              onChange={(e) => void pick(e.target.files?.[0])}
+              multiple
+              onChange={(e) => void pick(e.target.files)}
             />
           </label>
           <span className="text-xs text-muted-foreground">or drop it here — video, PDF, image, audio, code, zip</span>
