@@ -39,7 +39,7 @@ function FilesIndex() {
       />
 
       {sections.length === 0 ? (
-        <EmptyState title="No packs published yet" description="Editors are still assembling the first file packs." />
+        <EmptyState title="No packs published yet" hint="Editors are still assembling the first file packs." />
       ) : (
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {sections.map((section) => {
