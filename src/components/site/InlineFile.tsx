@@ -12,14 +12,46 @@ const RESIZE_SCRIPT = `<script>(function(){
   window.addEventListener('resize',send);
   document.addEventListener('click',function(){setTimeout(send,150);},true);
   setInterval(send,600);
+
+  // Keep navigation inside this document: in-page anchors scroll here,
+  // anything external opens in a new tab instead of loading a site in the frame.
+  document.addEventListener('click',function(e){
+    var a=e.target&&e.target.closest?e.target.closest('a[href]'):null;
+    if(!a) return;
+    var raw=a.getAttribute('href')||'';
+    if(!raw||raw.toLowerCase().indexOf('javascript:')===0) return;
+    if(raw.charAt(0)==='#'){
+      e.preventDefault();
+      var id=decodeURIComponent(raw.slice(1));
+      var t=id?(document.getElementById(id)||document.getElementsByName(id)[0]):document.body;
+      if(t&&t.scrollIntoView){t.scrollIntoView({behavior:'smooth',block:'start'});}
+      setTimeout(send,300);
+      return;
+    }
+    var abs;
+    try{abs=new URL(raw,document.baseURI).href;}catch(err){return;}
+    if(abs.split('#')[0]===document.baseURI.split('#')[0]){
+      e.preventDefault();
+      return;
+    }
+    e.preventDefault();
+    window.open(abs,'_blank','noopener');
+  },true);
 })();<\/script>`;
 
-function prepare(html: string): string {
-  const doc = /<html[\s>]/i.test(html)
+function prepare(html: string, url: string): string {
+  const base = `<base href="${url.replace(/"/g, "&quot;")}">`;
+  let doc = /<html[\s>]/i.test(html)
     ? html
     : `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>${html}</body></html>`;
+  if (!/<base[\s>]/i.test(doc)) {
+    doc = /<head[^>]*>/i.test(doc)
+      ? doc.replace(/<head[^>]*>/i, (m) => `${m}${base}`)
+      : `${base}${doc}`;
+  }
   return /<\/body>/i.test(doc) ? doc.replace(/<\/body>/i, `${RESIZE_SCRIPT}</body>`) : doc + RESIZE_SCRIPT;
 }
+
 
 /**
  * Renders an uploaded file as a native part of the page — an uploaded HTML page
@@ -73,7 +105,7 @@ function HtmlPage({ url, title }: { url: string; title: string }) {
     fetch(url)
       .then((r) => r.text())
       .then((body) => {
-        if (alive) setDoc(prepare(body));
+        if (alive) setDoc(prepare(body, url));
       })
       .catch(() => {
         if (alive) setDoc("");
