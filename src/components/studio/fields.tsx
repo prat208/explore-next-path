@@ -291,10 +291,13 @@ export function UploadControl({
     };
   }, [value, isText]);
 
-  async function pick(file: File | undefined) {
-    if (!file) return;
+  async function pick(list: FileList | null | undefined) {
+    const picked = list ? Array.from(list) : [];
+    if (picked.length === 0) return;
     setBusy(true);
     try {
+      const [file] = await bundleWebFiles(picked);
+      if (!file) return;
       const uploaded = await uploadToLibrary(file, folder);
       onChange(uploaded.url);
       toast.success(`${file.name} uploaded`);
