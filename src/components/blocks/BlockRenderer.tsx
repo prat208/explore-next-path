@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { ContentBlock } from "@/lib/content";
 import { EmbedBlock } from "./EmbedBlock";
+import { MediaBlock } from "./MediaBlock";
 
 type Data = Record<string, unknown>;
 
