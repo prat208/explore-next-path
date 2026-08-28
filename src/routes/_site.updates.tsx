@@ -16,7 +16,8 @@ import {
 import { useAuth } from "@/lib/useAuth";
 import { cn } from "@/lib/utils";
 import { ReferralGate } from "@/components/referral/ReferralGate";
-import { gateList, useAccess } from "@/lib/referral";
+import { isLocked, useAccess } from "@/lib/referral";
+import { LockedCard } from "@/components/referral/LockedCard";
 
 export const Route = createFileRoute("/_site/updates")({
   head: () => ({
@@ -75,7 +76,7 @@ function UpdatesPage() {
     const list = (updates.data ?? []).filter((u) => u.kind === kind);
     return rankForInterests(list, prefs.data?.interests ?? []);
   }, [updates.data, kind, prefs.data?.interests]);
-  const items = gateList(ranked, unlocked);
+  const items = ranked;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
@@ -125,8 +126,9 @@ function UpdatesPage() {
         <CardGridSkeleton count={6} />
       ) : items.length ? (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((item) => (
+          {items.map((item, index) => (
             <li key={item.id}>
+              <LockedCard locked={isLocked(unlocked, index)}>
               <a
                 href={item.url}
                 target="_blank"
@@ -144,6 +146,7 @@ function UpdatesPage() {
                   <p className="line-clamp-4 text-sm text-muted-foreground">{item.summary}</p>
                 )}
               </a>
+              </LockedCard>
             </li>
           ))}
         </ul>
@@ -154,7 +157,7 @@ function UpdatesPage() {
         />
       )}
 
-      <ReferralGate label="updates" hidden={ranked.length - items.length} />
+      <ReferralGate label="updates" hidden={unlocked ? 0 : Math.max(0, ranked.length - 1)} />
     </div>
   );
 }
