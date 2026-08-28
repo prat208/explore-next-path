@@ -194,6 +194,8 @@ function SectionPanel({ section, onChanged }: { section: SectionWithFiles; onCha
         </div>
       </div>
 
+      <AttachControl section={section} onChanged={onChanged} />
+
       <div
         onDragOver={(event) => event.preventDefault()}
         onDrop={(event) => {
