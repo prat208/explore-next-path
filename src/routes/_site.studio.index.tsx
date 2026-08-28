@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ExternalLink, FolderPlus, FolderUp, Trash2, UploadCloud } from "lucide-react";
+import { ExternalLink, FolderPlus, FolderUp, Link2, Trash2, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 import { MediaBlock } from "@/components/blocks/MediaBlock";
 import { bundleWebFiles, detectKind, prettySize, uploadToLibrary } from "@/lib/upload";
@@ -9,11 +9,13 @@ import type { UploadFile, UploadSection } from "@/lib/sections";
 import {
   SECTION_CATEGORIES,
   addFile,
+  attachTargetsQuery,
   categoryLabel,
   createSection,
   deleteFile,
   deleteSection,
   sectionsQuery,
+  updateSection,
 } from "@/lib/sections";
 
 export const Route = createFileRoute("/_site/studio/")({
@@ -271,5 +273,41 @@ function SectionPanel({ section, onChanged }: { section: SectionWithFiles; onCha
         </div>
       )}
     </section>
+  );
+}
+
+/** Links a whole section to one page, so its files render inside that page. */
+function AttachControl({ section, onChanged }: { section: SectionWithFiles; onChanged: () => void }) {
+  const targets = useQuery(attachTargetsQuery);
+  const value = section.entity_type && section.entity_slug ? `${section.entity_type}::${section.entity_slug}` : "";
+
+  return (
+    <label className="mt-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+      <Link2 className="h-4 w-4 text-primary" />
+      Show these files on:
+      <select
+        value={value}
+        onChange={(event) => {
+          const [type, slug] = event.target.value.split("::");
+          void updateSection(section.id, {
+            entity_type: type || null,
+            entity_slug: slug || null,
+          })
+            .then(() => {
+              toast.success(type ? "Linked — files now appear on that page" : "Unlinked");
+              onChanged();
+            })
+            .catch((error: unknown) => toast.error(error instanceof Error ? error.message : "Could not link"));
+        }}
+        className="focus-ring min-w-56 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
+      >
+        <option value="">Only its own page (/files/{section.slug})</option>
+        {(targets.data ?? []).map((target) => (
+          <option key={`${target.type}::${target.slug}`} value={`${target.type}::${target.slug}`}>
+            {categoryLabel(target.type)}: {target.title}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }
