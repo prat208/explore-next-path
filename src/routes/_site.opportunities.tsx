@@ -6,6 +6,8 @@ import { ExternalLink } from "lucide-react";
 import { opportunitiesQuery } from "@/lib/content";
 import { EmptyState, PageHeader, Pill } from "@/components/site/bits";
 import { cn } from "@/lib/utils";
+import { ReferralGate } from "@/components/referral/ReferralGate";
+import { gateList, useAccess } from "@/lib/referral";
 
 export const Route = createFileRoute("/_site/opportunities")({
   head: () => ({
@@ -26,13 +28,15 @@ export const Route = createFileRoute("/_site/opportunities")({
 
 function OpportunitiesPage() {
   const opportunities = useSuspenseQuery(opportunitiesQuery()).data;
+  const { unlocked } = useAccess();
   const [category, setCategory] = useState("all");
 
   const categories = useMemo(
     () => ["all", ...Array.from(new Set(opportunities.map((o) => o.category)))],
     [opportunities],
   );
-  const filtered = category === "all" ? opportunities : opportunities.filter((o) => o.category === category);
+  const matching = category === "all" ? opportunities : opportunities.filter((o) => o.category === category);
+  const filtered = gateList(matching, unlocked);
 
   return (
     <>
@@ -108,6 +112,7 @@ function OpportunitiesPage() {
             ))}
           </ul>
         )}
+        <ReferralGate label="opportunities" hidden={matching.length - filtered.length} />
         <UploadedSections category="opportunity" title="Uploaded opportunity packs" description="Forms, briefs and guides you can read right here." />
       </div>
     </>

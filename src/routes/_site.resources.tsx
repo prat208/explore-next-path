@@ -7,6 +7,8 @@ import { resourcesQuery, toolsQuery } from "@/lib/content";
 import { EmptyState, PageHeader, Pill } from "@/components/site/bits";
 import { SaveButton } from "@/components/site/SaveButton";
 import { cn } from "@/lib/utils";
+import { ReferralGate } from "@/components/referral/ReferralGate";
+import { gateList, useAccess } from "@/lib/referral";
 
 export const Route = createFileRoute("/_site/resources")({
   head: () => ({
@@ -36,16 +38,23 @@ function ResourcesPage() {
   const [tab, setTab] = useState<"resources" | "tools">("resources");
   const [category, setCategory] = useState("all");
   const [freeOnly, setFreeOnly] = useState(false);
+  const { unlocked } = useAccess();
 
   const categories = useMemo(() => {
     const source = tab === "resources" ? resources.map((r) => r.category) : tools.map((t) => t.category);
     return ["all", ...Array.from(new Set(source))];
   }, [tab, resources, tools]);
 
-  const filteredResources = resources.filter(
+  const matchingResources = resources.filter(
     (r) => (category === "all" || r.category === category) && (!freeOnly || r.has_free_tier || r.cost === "free"),
   );
-  const filteredTools = tools.filter((t) => category === "all" || t.category === category);
+  const matchingTools = tools.filter((t) => category === "all" || t.category === category);
+  const filteredResources = gateList(matchingResources, unlocked);
+  const filteredTools = gateList(matchingTools, unlocked);
+  const hiddenCount =
+    tab === "resources"
+      ? matchingResources.length - filteredResources.length
+      : matchingTools.length - filteredTools.length;
 
   return (
     <>
@@ -182,6 +191,7 @@ function ResourcesPage() {
             ))}
           </ul>
         )}
+        <ReferralGate label={tab === "resources" ? "resources" : "tools"} hidden={hiddenCount} />
         <UploadedSections category="resource" title="Uploaded resources" description="Documents, notebooks and interactive files you can open here." />
       </div>
     </>

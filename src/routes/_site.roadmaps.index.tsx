@@ -3,6 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { roadmapsQuery } from "@/lib/content";
 import { CardShell, MiniTree, PageHeader, Pill } from "@/components/site/bits";
+import { ReferralGate } from "@/components/referral/ReferralGate";
+import { gateList, useAccess } from "@/lib/referral";
 
 export const Route = createFileRoute("/_site/roadmaps/")({
   head: () => ({
@@ -25,7 +27,9 @@ export const Route = createFileRoute("/_site/roadmaps/")({
 });
 
 function RoadmapsIndex() {
-  const roadmaps = useSuspenseQuery(roadmapsQuery()).data;
+  const all = useSuspenseQuery(roadmapsQuery()).data;
+  const { unlocked } = useAccess();
+  const roadmaps = gateList(all, unlocked);
 
   return (
     <>
@@ -53,6 +57,7 @@ function RoadmapsIndex() {
             </CardShell>
           ))}
         </div>
+        <ReferralGate label="roadmaps" hidden={all.length - roadmaps.length} />
         <UploadedSections category="roadmap" title="Uploaded roadmaps" description="Full roadmap packs: diagrams, PDFs and interactive files." />
       </div>
     </>
