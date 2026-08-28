@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Check, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
-import { detectKind, uploadToLibrary } from "@/lib/upload";
+import { bundleWebFiles, detectKind, uploadToLibrary } from "@/lib/upload";
 import { cn } from "@/lib/utils";
 import type { StudioField } from "@/lib/studio";
 
