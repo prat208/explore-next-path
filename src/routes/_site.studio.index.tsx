@@ -4,7 +4,7 @@ import { Trash2, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 import { MediaBlock } from "@/components/blocks/MediaBlock";
 import { supabase } from "@/integrations/supabase/client";
-import { detectKind, prettySize, uploadToLibrary } from "@/lib/upload";
+import { bundleWebFiles, detectKind, prettySize, uploadToLibrary } from "@/lib/upload";
 
 export const Route = createFileRoute("/_site/studio/")({
   component: UploadsPage,
