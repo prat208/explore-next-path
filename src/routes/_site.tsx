@@ -95,6 +95,12 @@ function SiteLayout() {
             {user ? (
               <>
                 <Link
+                  to="/profile"
+                  className="focus-ring rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+                >
+                  Profile
+                </Link>
+                <Link
                   to="/library"
                   className="focus-ring rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
                 >
