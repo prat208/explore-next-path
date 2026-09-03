@@ -151,7 +151,9 @@ function OpportunitiesPage() {
             ))}
           </ul>
         )}
-        <ReferralGate label="opportunities" hidden={unlocked ? 0 : Math.max(0, entries.length - 1)} />
+        {tab === "opportunities" && (
+          <ReferralGate label="opportunities" hidden={unlocked ? 0 : Math.max(0, entries.length - 1)} />
+        )}
       </div>
     </>
   );
