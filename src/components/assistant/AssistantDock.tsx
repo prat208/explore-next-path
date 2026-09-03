@@ -163,6 +163,7 @@ export function AssistantDock() {
           </div>
 
           <form
+            hidden={!userId}
             onSubmit={(e) => {
               e.preventDefault();
               void send(input);
