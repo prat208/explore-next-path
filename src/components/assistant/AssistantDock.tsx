@@ -58,8 +58,6 @@ export function AssistantDock() {
     }
   }
 
-  if (!userId) return null;
-
   return (
     <>
       {needsOnboarding && (
