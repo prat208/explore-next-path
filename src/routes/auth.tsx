@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Compass } from "lucide-react";
+import { Wordmark } from "@/components/site/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { captureReferralFromUrl } from "@/lib/referral";
@@ -29,6 +29,9 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [headline, setHeadline] = useState("");
+  const [location, setLocation] = useState("");
+  const [skills, setSkills] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -59,6 +62,7 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        await saveProfileDetails();
         toast.success("Account created. Check your inbox if confirmation is required.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -70,6 +74,30 @@ function AuthPage() {
     } finally {
       setBusy(false);
     }
+  }
+
+  /**
+   * Profile details are optional at sign-up. When given, they are written to
+   * the profile row the signup trigger just created; when skipped, the site
+   * layout keeps prompting the explorer to create their profile.
+   */
+  async function saveProfileDetails() {
+    const skillList = skills
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (!headline.trim() && !location.trim() && skillList.length === 0) return;
+    const { data } = await supabase.auth.getSession();
+    const uid = data.session?.user.id;
+    if (!uid) return;
+    await supabase
+      .from("profiles")
+      .update({
+        headline: headline.trim() || null,
+        location: location.trim() || null,
+        skills: skillList,
+      })
+      .eq("id", uid);
   }
 
   async function onGoogle() {
@@ -87,9 +115,8 @@ function AuthPage() {
   return (
     <main className="topo flex min-h-dvh items-center justify-center bg-background px-4 py-16">
       <div className="w-full max-w-md">
-        <Link to="/" className="focus-ring inline-flex items-center gap-2 text-primary">
-          <Compass className="h-5 w-5" aria-hidden />
-          <span className="font-display text-lg font-bold tracking-tight">Explorers</span>
+        <Link to="/" className="focus-ring inline-flex items-center gap-2">
+          <Wordmark />
         </Link>
         <h1 className="mt-6 font-display text-2xl font-bold tracking-tight text-foreground">
           {mode === "signin" ? "Sign in to continue exploring" : "Start your explorer account"}
@@ -124,6 +151,44 @@ function AuthPage() {
                 autoComplete="name"
               />
             </label>
+          )}
+          {mode === "signup" && (
+            <div className="rounded-xl border border-border bg-surface/50 p-3.5">
+              <p className="text-sm font-semibold text-foreground">Create your profile</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Optional — you can skip and finish it later from your profile page.
+              </p>
+              <div className="mt-3 space-y-3">
+                <label className="block text-sm">
+                  <span className="text-muted-foreground">Headline</span>
+                  <input
+                    value={headline}
+                    onChange={(e) => setHeadline(e.target.value)}
+                    placeholder="CS student exploring AI engineering"
+                    className="focus-ring mt-1 w-full rounded-lg border border-border bg-card px-3 py-2.5 text-foreground outline-none"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="text-muted-foreground">Location</span>
+                  <input
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="Pune, India"
+                    className="focus-ring mt-1 w-full rounded-lg border border-border bg-card px-3 py-2.5 text-foreground outline-none"
+                    autoComplete="address-level2"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="text-muted-foreground">Skills (comma separated)</span>
+                  <input
+                    value={skills}
+                    onChange={(e) => setSkills(e.target.value)}
+                    placeholder="Python, SQL, Figma"
+                    className="focus-ring mt-1 w-full rounded-lg border border-border bg-card px-3 py-2.5 text-foreground outline-none"
+                  />
+                </label>
+              </div>
+            </div>
           )}
           <label className="block text-sm">
             <span className="text-muted-foreground">Email</span>
