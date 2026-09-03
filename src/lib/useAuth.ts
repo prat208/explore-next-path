@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
@@ -17,57 +17,98 @@ export type AuthState = {
   refresh: () => void;
 };
 
+type Snapshot = {
+  loading: boolean;
+  session: Session | null;
+  profile: Profile | null;
+  roles: AppRole[];
+};
+
+/**
+ * One shared auth store for the whole app. Every component used to run its own
+ * session listener plus profile/role queries, so a single page navigation fired
+ * the same requests five or six times — that was the visible lag. Now the
+ * session is fetched once and every consumer reads the same snapshot.
+ */
+const EMPTY: Snapshot = { loading: true, session: null, profile: null, roles: [] };
+
+let snapshot: Snapshot = EMPTY;
+const listeners = new Set<() => void>();
+let started = false;
+let loadedFor: string | null = null;
+let inFlight: Promise<void> | null = null;
+
+function set(next: Partial<Snapshot>) {
+  snapshot = { ...snapshot, ...next };
+  for (const listener of listeners) listener();
+}
+
+async function loadIdentity(userId: string, force = false) {
+  if (!force && loadedFor === userId) return;
+  if (inFlight && !force) return inFlight;
+  inFlight = (async () => {
+    const [p, r] = await Promise.all([
+      supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
+      supabase.from("user_roles").select("role").eq("user_id", userId),
+    ]);
+    if (snapshot.session?.user?.id !== userId) return;
+    loadedFor = userId;
+    set({
+      profile: (p.data ?? null) as Profile | null,
+      roles: ((r.data ?? []) as { role: AppRole }[]).map((row) => row.role),
+    });
+  })().finally(() => {
+    inFlight = null;
+  });
+  return inFlight;
+}
+
+function applySession(session: Session | null) {
+  const sameUser = snapshot.session?.user?.id === session?.user?.id;
+  set({ session, loading: false });
+  if (!session?.user) {
+    loadedFor = null;
+    if (!sameUser) set({ profile: null, roles: [] });
+    return;
+  }
+  void loadIdentity(session.user.id);
+}
+
+function start() {
+  if (started || typeof window === "undefined") return;
+  started = true;
+  supabase.auth.onAuthStateChange((_event, next) => applySession(next));
+  void supabase.auth.getSession().then(({ data }) => applySession(data.session));
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+const getSnapshot = () => snapshot;
+const getServerSnapshot = () => EMPTY;
+
 export function useAuth(): AuthState {
-  const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [roles, setRoles] = useState<AppRole[]>([]);
-  const [tick, setTick] = useState(0);
+  const state = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
-      setSession(next);
-    });
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoading(false);
-    });
-    return () => sub.subscription.unsubscribe();
+    start();
   }, []);
 
-  const userId = session?.user?.id;
-
-  useEffect(() => {
-    if (!userId) {
-      setProfile(null);
-      setRoles([]);
-      return;
-    }
-    let cancelled = false;
-    (async () => {
-      const [p, r] = await Promise.all([
-        supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
-        supabase.from("user_roles").select("role").eq("user_id", userId),
-      ]);
-      if (cancelled) return;
-      setProfile((p.data ?? null) as Profile | null);
-      setRoles(((r.data ?? []) as { role: AppRole }[]).map((row) => row.role));
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [userId, tick]);
-
-  const isAdmin = roles.includes("admin") || roles.includes("super_admin");
+  const isAdmin = state.roles.includes("admin") || state.roles.includes("super_admin");
 
   return {
-    loading,
-    session,
-    user: session?.user ?? null,
-    profile,
-    roles,
-    isEditor: isAdmin || roles.includes("editor"),
+    loading: state.loading,
+    session: state.session,
+    user: state.session?.user ?? null,
+    profile: state.profile,
+    roles: state.roles,
+    isEditor: isAdmin || state.roles.includes("editor"),
     isAdmin,
-    refresh: () => setTick((t) => t + 1),
+    refresh: () => {
+      const id = snapshot.session?.user?.id;
+      if (id) void loadIdentity(id, true);
+    },
   };
 }
