@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { ExternalLink, RefreshCw, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { PageHeader, Pill, EmptyState, CardGridSkeleton } from "@/components/site/bits";
+import { Pill, EmptyState, CardGridSkeleton } from "@/components/site/bits";
 import { refreshTechUpdates } from "@/lib/updates.functions";
 import {
   UPDATE_KINDS,

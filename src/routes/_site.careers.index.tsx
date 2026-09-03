@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { careersQuery } from "@/lib/content";
-import { CardShell, PageHeader, Pill } from "@/components/site/bits";
+import { CardShell, Pill } from "@/components/site/bits";
 import { LockedCard } from "@/components/referral/LockedCard";
 import { ReferralGate } from "@/components/referral/ReferralGate";
 import { UploadedSectionCard } from "@/components/site/UploadedSectionCard";
@@ -21,12 +21,14 @@ export const Route = createFileRoute("/_site/careers/")({
       { property: "og:description", content: "Honest role breakdowns, not job-board copy." },
     ],
   }),
-  loader: ({ context }) => context.queryClient.ensureQueryData(careersQuery()),
-  component: CareersIndex,
+  beforeLoad: () => {
+    // Careers now live inside the merged Roadmaps & Careers hub.
+    throw redirect({ to: "/roadmaps" });
+  },
 });
 
-function CareersIndex() {
-  const careers = useSuspenseQuery(careersQuery()).data;
+export function CareersSection() {
+  const careers = useQuery(careersQuery()).data ?? [];
   const uploads = (useQuery(publishedSectionsQuery("career")).data ?? []).filter(
     (section) => section.files.length > 0,
   );
@@ -38,12 +40,7 @@ function CareersIndex() {
 
   return (
     <>
-      <PageHeader
-        eyebrow="Careers"
-        title="Understand the role before you chase it"
-        description="Each hub covers the day-to-day reality, technical and soft skills, tools, portfolio expectations, interview prep and where the role leads."
-      />
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+      <div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {entries.map((entry, index) => (
             <LockedCard key={entry.kind === "upload" ? entry.section.id : entry.career.id} locked={isLocked(unlocked, index)}>
