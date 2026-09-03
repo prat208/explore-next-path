@@ -1,0 +1,15 @@
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS pronouns text,
+  ADD COLUMN IF NOT EXISTS banner_url text,
+  ADD COLUMN IF NOT EXISTS role_title text,
+  ADD COLUMN IF NOT EXISTS current_company text,
+  ADD COLUMN IF NOT EXISTS industry text,
+  ADD COLUMN IF NOT EXISTS twitter_url text,
+  ADD COLUMN IF NOT EXISTS portfolio_url text,
+  ADD COLUMN IF NOT EXISTS contact_email text,
+  ADD COLUMN IF NOT EXISTS languages text[] NOT NULL DEFAULT '{}',
+  ADD COLUMN IF NOT EXISTS open_to text[] NOT NULL DEFAULT '{}',
+  ADD COLUMN IF NOT EXISTS experience jsonb NOT NULL DEFAULT '[]'::jsonb,
+  ADD COLUMN IF NOT EXISTS education jsonb NOT NULL DEFAULT '[]'::jsonb,
+  ADD COLUMN IF NOT EXISTS certifications jsonb NOT NULL DEFAULT '[]'::jsonb,
+  ADD COLUMN IF NOT EXISTS achievements jsonb NOT NULL DEFAULT '[]'::jsonb;

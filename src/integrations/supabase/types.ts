@@ -619,68 +619,110 @@ export type Database = {
       }
       profiles: {
         Row: {
+          achievements: Json
           avatar_url: string | null
+          banner_url: string | null
           bio: string | null
           career_interests: string[]
+          certifications: Json
+          contact_email: string | null
           country: string | null
           created_at: string
+          current_company: string | null
           display_name: string | null
+          education: Json
+          experience: Json
           experience_level: Database["public"]["Enums"]["difficulty"]
           github_url: string | null
           goals: string[]
           handle: string | null
           headline: string | null
           id: string
+          industry: string | null
           intents: string[]
           interests: string[]
+          languages: string[]
           linkedin_url: string | null
           location: string | null
           onboarded: boolean
+          open_to: string[]
+          portfolio_url: string | null
+          pronouns: string | null
+          role_title: string | null
           skills: string[]
+          twitter_url: string | null
           updated_at: string
           website_url: string | null
         }
         Insert: {
+          achievements?: Json
           avatar_url?: string | null
+          banner_url?: string | null
           bio?: string | null
           career_interests?: string[]
+          certifications?: Json
+          contact_email?: string | null
           country?: string | null
           created_at?: string
+          current_company?: string | null
           display_name?: string | null
+          education?: Json
+          experience?: Json
           experience_level?: Database["public"]["Enums"]["difficulty"]
           github_url?: string | null
           goals?: string[]
           handle?: string | null
           headline?: string | null
           id: string
+          industry?: string | null
           intents?: string[]
           interests?: string[]
+          languages?: string[]
           linkedin_url?: string | null
           location?: string | null
           onboarded?: boolean
+          open_to?: string[]
+          portfolio_url?: string | null
+          pronouns?: string | null
+          role_title?: string | null
           skills?: string[]
+          twitter_url?: string | null
           updated_at?: string
           website_url?: string | null
         }
         Update: {
+          achievements?: Json
           avatar_url?: string | null
+          banner_url?: string | null
           bio?: string | null
           career_interests?: string[]
+          certifications?: Json
+          contact_email?: string | null
           country?: string | null
           created_at?: string
+          current_company?: string | null
           display_name?: string | null
+          education?: Json
+          experience?: Json
           experience_level?: Database["public"]["Enums"]["difficulty"]
           github_url?: string | null
           goals?: string[]
           handle?: string | null
           headline?: string | null
           id?: string
+          industry?: string | null
           intents?: string[]
           interests?: string[]
+          languages?: string[]
           linkedin_url?: string | null
           location?: string | null
           onboarded?: boolean
+          open_to?: string[]
+          portfolio_url?: string | null
+          pronouns?: string | null
+          role_title?: string | null
           skills?: string[]
+          twitter_url?: string | null
           updated_at?: string
           website_url?: string | null
         }
