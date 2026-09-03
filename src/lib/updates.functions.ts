@@ -15,7 +15,7 @@ const QUERIES: { kind: "news" | "hackathon" | "free_tier" | "opportunity"; query
  * Public but self-throttled: it only crawls when the newest item is older than 12h.
  */
 export const refreshTechUpdates = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => RefreshInput.parse(input))
+  .validator((input: unknown) => RefreshInput.parse(input))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 

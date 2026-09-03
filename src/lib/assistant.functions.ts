@@ -37,7 +37,7 @@ End with one clear next action.`;
 /** Personalized chat reply, stored in the explorer's assistant history. */
 export const askAssistant = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => AskInput.parse(input))
+  .validator((input: unknown) => AskInput.parse(input))
   .handler(async ({ data, context }) => {
     const { chatComplete, AiError } = await import("./ai.server");
     const { supabase, userId } = context;
@@ -101,7 +101,7 @@ const PlanInput = z.object({
 /** Turns onboarding answers into a personalized plan, saved on the profile. */
 export const buildPersonalPlan = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => PlanInput.parse(input))
+  .validator((input: unknown) => PlanInput.parse(input))
   .handler(async ({ data, context }) => {
     const { chatComplete, AiError } = await import("./ai.server");
     const { supabase, userId } = context;
