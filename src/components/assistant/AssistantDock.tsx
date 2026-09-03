@@ -58,11 +58,9 @@ export function AssistantDock() {
     }
   }
 
-  if (!userId) return null;
-
   return (
     <>
-      {needsOnboarding && (
+      {needsOnboarding && userId && (
         <OnboardingDialog
           userId={userId}
           onDone={() => setOpen(true)}
@@ -110,7 +108,37 @@ export function AssistantDock() {
               <p className="text-xs text-muted-foreground">The guide is thinking…</p>
             )}
 
-            {!history.data?.length && !pending && (
+            {!userId && (
+              <div className="space-y-3">
+                <p className="text-sm text-foreground">
+                  The Guide builds a personal learning path for you — roadmaps to follow, free
+                  resources, hackathons and daily tech updates picked for your goal.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Sign in to start the conversation.
+                </p>
+                <Link
+                  to="/auth"
+                  onClick={() => setOpen(false)}
+                  className="focus-ring inline-flex rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-deep"
+                >
+                  Sign in to ask the Guide
+                </Link>
+                <div className="space-y-2 pt-2">
+                  <p className="text-xs text-muted-foreground">You could ask:</p>
+                  {STARTERS.map((s) => (
+                    <p
+                      key={s}
+                      className="rounded-xl border border-border bg-surface/50 px-3 py-2 text-sm text-muted-foreground"
+                    >
+                      {s}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {userId && !history.data?.length && !pending && (
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">Try one of these:</p>
                 {STARTERS.map((s) => (
@@ -135,6 +163,7 @@ export function AssistantDock() {
           </div>
 
           <form
+            hidden={!userId}
             onSubmit={(e) => {
               e.preventDefault();
               void send(input);
