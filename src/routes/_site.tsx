@@ -19,6 +19,7 @@ const NAV = [
   { to: "/updates", label: "Updates" },
   { to: "/opportunities", label: "Opportunities" },
   { to: "/careers", label: "Careers" },
+  { to: "/problems", label: "Problems" },
 ] as const;
 
 function SiteLayout() {

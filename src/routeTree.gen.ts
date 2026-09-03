@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as SiteIndexRouteImport } from './routes/_site.index'
 import { Route as SiteLibraryRouteImport } from './routes/_site.library'
 import { Route as SiteOpportunitiesRouteImport } from './routes/_site.opportunities'
+import { Route as SiteProblemsRouteImport } from './routes/_site.problems'
 import { Route as SiteResourcesRouteImport } from './routes/_site.resources'
 import { Route as SiteSearchRouteImport } from './routes/_site.search'
 import { Route as SiteStudioRouteImport } from './routes/_site.studio'
@@ -51,6 +52,11 @@ const SiteLibraryRoute = SiteLibraryRouteImport.update({
 const SiteOpportunitiesRoute = SiteOpportunitiesRouteImport.update({
   id: '/opportunities',
   path: '/opportunities',
+  getParentRoute: () => SiteRoute,
+} as any)
+const SiteProblemsRoute = SiteProblemsRouteImport.update({
+  id: '/problems',
+  path: '/problems',
   getParentRoute: () => SiteRoute,
 } as any)
 const SiteResourcesRoute = SiteResourcesRouteImport.update({
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/library': typeof SiteLibraryRoute
   '/opportunities': typeof SiteOpportunitiesRoute
+  '/problems': typeof SiteProblemsRoute
   '/resources': typeof SiteResourcesRoute
   '/search': typeof SiteSearchRoute
   '/studio': typeof SiteStudioRouteWithChildren
@@ -149,6 +156,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/library': typeof SiteLibraryRoute
   '/opportunities': typeof SiteOpportunitiesRoute
+  '/problems': typeof SiteProblemsRoute
   '/resources': typeof SiteResourcesRoute
   '/search': typeof SiteSearchRoute
   '/updates': typeof SiteUpdatesRoute
@@ -170,6 +178,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_site/library': typeof SiteLibraryRoute
   '/_site/opportunities': typeof SiteOpportunitiesRoute
+  '/_site/problems': typeof SiteProblemsRoute
   '/_site/resources': typeof SiteResourcesRoute
   '/_site/search': typeof SiteSearchRoute
   '/_site/studio': typeof SiteStudioRouteWithChildren
@@ -193,6 +202,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/library'
     | '/opportunities'
+    | '/problems'
     | '/resources'
     | '/search'
     | '/studio'
@@ -212,6 +222,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/library'
     | '/opportunities'
+    | '/problems'
     | '/resources'
     | '/search'
     | '/updates'
@@ -232,6 +243,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_site/library'
     | '/_site/opportunities'
+    | '/_site/problems'
     | '/_site/resources'
     | '/_site/search'
     | '/_site/studio'
@@ -289,6 +301,13 @@ declare module '@tanstack/react-router' {
       path: '/opportunities'
       fullPath: '/opportunities'
       preLoaderRoute: typeof SiteOpportunitiesRouteImport
+      parentRoute: typeof SiteRoute
+    }
+    '/_site/problems': {
+      id: '/_site/problems'
+      path: '/problems'
+      fullPath: '/problems'
+      preLoaderRoute: typeof SiteProblemsRouteImport
       parentRoute: typeof SiteRoute
     }
     '/_site/resources': {
@@ -411,6 +430,7 @@ const SiteStudioRouteWithChildren = SiteStudioRoute._addFileChildren(
 interface SiteRouteChildren {
   SiteLibraryRoute: typeof SiteLibraryRoute
   SiteOpportunitiesRoute: typeof SiteOpportunitiesRoute
+  SiteProblemsRoute: typeof SiteProblemsRoute
   SiteResourcesRoute: typeof SiteResourcesRoute
   SiteSearchRoute: typeof SiteSearchRoute
   SiteStudioRoute: typeof SiteStudioRouteWithChildren
@@ -428,6 +448,7 @@ interface SiteRouteChildren {
 const SiteRouteChildren: SiteRouteChildren = {
   SiteLibraryRoute: SiteLibraryRoute,
   SiteOpportunitiesRoute: SiteOpportunitiesRoute,
+  SiteProblemsRoute: SiteProblemsRoute,
   SiteResourcesRoute: SiteResourcesRoute,
   SiteSearchRoute: SiteSearchRoute,
   SiteStudioRoute: SiteStudioRouteWithChildren,

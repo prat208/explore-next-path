@@ -4,6 +4,8 @@ import { ArrowLeft } from "lucide-react";
 import { EmptyState } from "@/components/site/bits";
 import { InlineFile } from "@/components/site/InlineFile";
 import { SECTION_CATEGORIES, categoryLabel, sectionQuery } from "@/lib/sections";
+import { useLogVisit } from "@/lib/community";
+import { useAuth } from "@/lib/useAuth";
 
 
 export const Route = createFileRoute("/_site/section/$slug")({
