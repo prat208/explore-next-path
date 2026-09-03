@@ -15,12 +15,10 @@ export const Route = createFileRoute("/_site")({
 const NAV = [
   { to: "/", label: "Discover" },
   { to: "/articles", label: "Articles" },
-  { to: "/roadmaps", label: "Roadmaps" },
+  { to: "/roadmaps", label: "Roadmaps & Careers" },
   { to: "/resources", label: "Resources" },
-  { to: "/updates", label: "Updates" },
-  { to: "/opportunities", label: "Opportunities" },
-  { to: "/careers", label: "Careers" },
-  { to: "/problems", label: "Problems" },
+  { to: "/opportunities", label: "Opportunities & Updates" },
+  { to: "/problems", label: "Problems", soon: true },
 ] as const;
 
 function SiteLayout() {
