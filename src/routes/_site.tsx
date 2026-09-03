@@ -19,6 +19,7 @@ const NAV = [
   { to: "/updates", label: "Updates" },
   { to: "/opportunities", label: "Opportunities" },
   { to: "/careers", label: "Careers" },
+  { to: "/problems", label: "Problems" },
 ] as const;
 
 function SiteLayout() {
@@ -94,6 +95,12 @@ function SiteLayout() {
             {user ? (
               <>
                 <Link
+                  to="/profile"
+                  className="focus-ring rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+                >
+                  Profile
+                </Link>
+                <Link
                   to="/library"
                   className="focus-ring rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
                 >
@@ -152,6 +159,11 @@ function SiteLayout() {
               {isEditor && (
                 <Link to="/studio" onClick={() => setOpen(false)} className="focus-ring rounded-md px-2.5 py-2 text-sm font-medium text-primary">
                   Studio
+                </Link>
+              )}
+              {user && (
+                <Link to="/profile" onClick={() => setOpen(false)} className="focus-ring rounded-md px-2.5 py-2 text-sm font-medium text-primary">
+                  Profile
                 </Link>
               )}
               <Link

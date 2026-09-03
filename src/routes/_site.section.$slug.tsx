@@ -4,6 +4,8 @@ import { ArrowLeft } from "lucide-react";
 import { EmptyState } from "@/components/site/bits";
 import { InlineFile } from "@/components/site/InlineFile";
 import { SECTION_CATEGORIES, categoryLabel, sectionQuery } from "@/lib/sections";
+import { useLogVisit } from "@/lib/community";
+import { useAuth } from "@/lib/useAuth";
 
 
 export const Route = createFileRoute("/_site/section/$slug")({
@@ -34,6 +36,13 @@ export const Route = createFileRoute("/_site/section/$slug")({
 function SectionPage() {
   const { slug } = Route.useParams();
   const section = useSuspenseQuery(sectionQuery(slug)).data;
+  const { user } = useAuth();
+  useLogVisit(
+    user?.id,
+    section
+      ? { type: section.category, id: section.id, title: section.title, path: `/section/${section.slug}` }
+      : null,
+  );
   if (!section) return null;
 
   const listing = SECTION_CATEGORIES.find((c) => c.value === section.category);
