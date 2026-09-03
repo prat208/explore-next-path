@@ -1,29 +1,18 @@
-import logoAsset from "@/assets/explorers-logo.jpg.asset.json";
+import markUrl from "@/assets/explorers-mark.png";
 import { cn } from "@/lib/utils";
 
 /**
- * The Explorers brand mark. The source artwork is a wide lockup on paper, so
- * the mark itself is isolated with a clipped, scaled crop — no stretching.
+ * The Explorers brand mark — the angular explorer arrow, extracted from the
+ * original lockup as a transparent PNG so it reads cleanly at any size.
  */
 export function LogoMark({ className }: { className?: string }) {
   return (
-    <span
+    <img
+      src={markUrl}
+      alt=""
       aria-hidden
-      className={cn(
-        "block shrink-0 overflow-hidden rounded-md bg-surface ring-1 ring-border",
-        className,
-      )}
-    >
-      <span
-        className="block h-full w-full"
-        style={{
-          backgroundImage: `url(${logoAsset.url})`,
-          backgroundSize: "370% 370%",
-          backgroundPosition: "48% 28%",
-          backgroundRepeat: "no-repeat",
-        }}
-      />
-    </span>
+      className={cn("block h-9 w-9 shrink-0 object-contain", className)}
+    />
   );
 }
 
@@ -35,8 +24,8 @@ export function Wordmark({
   size?: "sm" | "md";
 }) {
   return (
-    <span className={cn("flex items-center gap-2", className)}>
-      <LogoMark className={size === "sm" ? "h-7 w-7" : "h-9 w-9"} />
+    <span className={cn("flex items-center gap-2.5", className)}>
+      <LogoMark className={size === "sm" ? "h-8 w-8" : "h-10 w-10"} />
       <span className="flex flex-col leading-none">
         <span
           className={cn(
@@ -46,7 +35,7 @@ export function Wordmark({
         >
           EXPLORERS
         </span>
-        <span className="mt-0.5 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+        <span className="mt-1 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
           Explore to Excel
         </span>
       </span>
