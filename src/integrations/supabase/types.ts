@@ -393,6 +393,36 @@ export type Database = {
         }
         Relationships: []
       }
+      explorer_activity: {
+        Row: {
+          created_at: string
+          id: string
+          item_id: string
+          item_type: string
+          path: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_id: string
+          item_type: string
+          path: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_id?: string
+          item_type?: string
+          path?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       learning_paths: {
         Row: {
           audience: string | null
@@ -590,45 +620,69 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          bio: string | null
           career_interests: string[]
           country: string | null
           created_at: string
           display_name: string | null
           experience_level: Database["public"]["Enums"]["difficulty"]
+          github_url: string | null
           goals: string[]
+          handle: string | null
+          headline: string | null
           id: string
           intents: string[]
           interests: string[]
+          linkedin_url: string | null
+          location: string | null
           onboarded: boolean
+          skills: string[]
           updated_at: string
+          website_url: string | null
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string | null
           career_interests?: string[]
           country?: string | null
           created_at?: string
           display_name?: string | null
           experience_level?: Database["public"]["Enums"]["difficulty"]
+          github_url?: string | null
           goals?: string[]
+          handle?: string | null
+          headline?: string | null
           id: string
           intents?: string[]
           interests?: string[]
+          linkedin_url?: string | null
+          location?: string | null
           onboarded?: boolean
+          skills?: string[]
           updated_at?: string
+          website_url?: string | null
         }
         Update: {
           avatar_url?: string | null
+          bio?: string | null
           career_interests?: string[]
           country?: string | null
           created_at?: string
           display_name?: string | null
           experience_level?: Database["public"]["Enums"]["difficulty"]
+          github_url?: string | null
           goals?: string[]
+          handle?: string | null
+          headline?: string | null
           id?: string
           intents?: string[]
           interests?: string[]
+          linkedin_url?: string | null
+          location?: string | null
           onboarded?: boolean
+          skills?: string[]
           updated_at?: string
+          website_url?: string | null
         }
         Relationships: []
       }
@@ -1053,6 +1107,48 @@ export type Database = {
           query?: string
           results_count?: number
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      submissions: {
+        Row: {
+          created_at: string
+          details: string | null
+          id: string
+          kind: string
+          link_url: string | null
+          status: string
+          summary: string | null
+          tags: string[]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          kind?: string
+          link_url?: string | null
+          status?: string
+          summary?: string | null
+          tags?: string[]
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          kind?: string
+          link_url?: string | null
+          status?: string
+          summary?: string | null
+          tags?: string[]
+          title?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
