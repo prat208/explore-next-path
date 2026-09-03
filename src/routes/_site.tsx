@@ -47,12 +47,7 @@ function SiteLayout() {
       <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
           <Link to="/" className="focus-ring flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <Compass className="h-5 w-5" aria-hidden />
-            </span>
-            <span className="font-display text-lg font-bold tracking-tight text-foreground">
-              Explorers
-            </span>
+            <Wordmark />
           </Link>
 
           <nav aria-label="Main" className="hidden flex-1 items-center gap-1 lg:flex">
@@ -190,9 +185,7 @@ function SiteLayout() {
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <div className="flex items-center gap-2">
-                <span className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                  <Compass className="h-4 w-4" aria-hidden />
-                </span>
+                <LogoMark className="h-7 w-7" />
                 <span className="font-display text-base font-bold text-foreground">Explorers</span>
               </div>
               <p className="mt-3 max-w-xs text-sm text-muted-foreground">
@@ -203,7 +196,7 @@ function SiteLayout() {
             <div>
               <p className="eyebrow text-muted-foreground">Explore</p>
               <ul className="mt-3 space-y-2 text-sm">
-                {NAV.slice(1, 5).map((item) => (
+                {NAV.slice(1, 4).map((item) => (
                   <li key={item.to}>
                     <Link to={item.to} className="focus-ring text-muted-foreground hover:text-foreground">
                       {item.label}
@@ -215,7 +208,7 @@ function SiteLayout() {
             <div>
               <p className="eyebrow text-muted-foreground">Grow</p>
               <ul className="mt-3 space-y-2 text-sm">
-                {NAV.slice(5).map((item) => (
+                {NAV.slice(4).map((item) => (
                   <li key={item.to}>
                     <Link to={item.to} className="focus-ring text-muted-foreground hover:text-foreground">
                       {item.label}
