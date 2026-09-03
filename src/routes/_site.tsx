@@ -1,5 +1,5 @@
-import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Menu, Search, UserPlus, X } from "lucide-react";
 import { Wordmark, LogoMark } from "@/components/site/Logo";
 import { useAuth } from "@/lib/useAuth";
@@ -11,6 +11,29 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_site")({
   component: SiteLayout,
 });
+
+/** Paths a signed-out visitor may browse; everything else asks them to join. */
+const PUBLIC_PATHS = ["/", "/auth"];
+
+/**
+ * Signed-out visitors get the landing page; the moment they open any other
+ * section we send them to sign up / sign in (client-side, so SSR is untouched).
+ */
+function GuestRedirect() {
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  useEffect(() => {
+    if (loading || user) return;
+    const isPublic = PUBLIC_PATHS.includes(pathname);
+    if (isPublic) return;
+    void navigate({ to: "/auth", replace: true });
+  }, [loading, user, pathname, navigate]);
+
+  return null;
+}
+
 
 const NAV = [
   { to: "/", label: "Discover" },
@@ -177,7 +200,9 @@ function SiteLayout() {
         </div>
       </header>
 
+      <GuestRedirect />
       <ProfilePrompt />
+
 
       <main id="main" className="flex-1">
         {/* Required: nested routes render here. */}
