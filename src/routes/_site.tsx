@@ -161,6 +161,11 @@ function SiteLayout() {
                   Studio
                 </Link>
               )}
+              {user && (
+                <Link to="/profile" onClick={() => setOpen(false)} className="focus-ring rounded-md px-2.5 py-2 text-sm font-medium text-primary">
+                  Profile
+                </Link>
+              )}
               <Link
                 to={user ? "/library" : "/auth"}
                 onClick={() => setOpen(false)}
