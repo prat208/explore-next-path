@@ -194,7 +194,7 @@ function ProfilePage() {
   );
 }
 
-function ProfileLink({ href, icon, label }: { href?: string | null; icon: React.ReactNode; label: string }) {
+function ProfileLink({ href, icon, label }: { href: string | null | undefined; icon: React.ReactNode; label: string }) {
   if (!href) return null;
   return (
     <a
