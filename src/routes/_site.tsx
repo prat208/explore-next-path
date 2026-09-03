@@ -1,6 +1,7 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Compass, Menu, Search, X } from "lucide-react";
+import { Menu, Search, UserPlus, X } from "lucide-react";
+import { Wordmark, LogoMark } from "@/components/site/Logo";
 import { useAuth } from "@/lib/useAuth";
 import { AssistantDock } from "@/components/assistant/AssistantDock";
 import { ReferralDialog } from "@/components/referral/LockedCard";
