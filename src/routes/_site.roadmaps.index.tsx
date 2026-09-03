@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { FileStack } from "lucide-react";
 import { roadmapsQuery } from "@/lib/content";
@@ -8,6 +9,8 @@ import { LockedCard } from "@/components/referral/LockedCard";
 import { isLocked, useAccess } from "@/lib/referral";
 import { publishedSectionsQuery } from "@/lib/sections";
 import { detectKind } from "@/lib/upload";
+import { CareersSection } from "./_site.careers.index";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_site/roadmaps/")({
   head: () => ({
@@ -37,6 +40,7 @@ function RoadmapsIndex() {
   const authored = useSuspenseQuery(roadmapsQuery()).data;
   const uploaded = useQuery(publishedSectionsQuery("roadmap")).data ?? [];
   const { unlocked } = useAccess();
+  const [tab, setTab] = useState<"roadmaps" | "careers">("roadmaps");
 
   // Uploaded roadmaps come first — they are the real thing; authored ones are the demo set.
   const entries: Entry[] = [
@@ -67,11 +71,33 @@ function RoadmapsIndex() {
   return (
     <>
       <PageHeader
-        eyebrow="Roadmaps"
-        title="See the whole terrain before you take a step"
-        description="Each roadmap is a structure of connected nodes — foundations, core skills, specialisations — and each node is a hub with what to read, what to use and what to build."
-      />
+        eyebrow="Roadmaps & Careers"
+        title="See the whole terrain, then the role it leads to"
+        description="Roadmaps are structures of connected nodes — foundations, core skills, specialisations. Career hubs explain the role each path lands you in."
+      >
+        <div className="flex flex-wrap gap-2">
+          {(["roadmaps", "careers"] as const).map((option) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => setTab(option)}
+              className={cn(
+                "focus-ring eyebrow rounded-full border px-3.5 py-1.5 capitalize transition-colors",
+                tab === option
+                  ? "border-primary bg-primary/15 text-primary"
+                  : "border-border text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+      </PageHeader>
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+        {tab === "careers" ? (
+          <CareersSection />
+        ) : (
+        <>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {entries.map((entry, index) => (
             <LockedCard key={entry.id} locked={isLocked(unlocked, index)}>
@@ -113,6 +139,8 @@ function RoadmapsIndex() {
           ))}
         </div>
         <ReferralGate label="roadmaps" hidden={lockedCount} />
+        </>
+        )}
       </div>
     </>
   );

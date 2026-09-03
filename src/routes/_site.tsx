@@ -1,6 +1,7 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Compass, Menu, Search, X } from "lucide-react";
+import { Menu, Search, UserPlus, X } from "lucide-react";
+import { Wordmark, LogoMark } from "@/components/site/Logo";
 import { useAuth } from "@/lib/useAuth";
 import { AssistantDock } from "@/components/assistant/AssistantDock";
 import { ReferralDialog } from "@/components/referral/LockedCard";
@@ -14,12 +15,10 @@ export const Route = createFileRoute("/_site")({
 const NAV = [
   { to: "/", label: "Discover" },
   { to: "/articles", label: "Articles" },
-  { to: "/roadmaps", label: "Roadmaps" },
+  { to: "/roadmaps", label: "Roadmaps & Careers" },
   { to: "/resources", label: "Resources" },
-  { to: "/updates", label: "Updates" },
-  { to: "/opportunities", label: "Opportunities" },
-  { to: "/careers", label: "Careers" },
-  { to: "/problems", label: "Problems" },
+  { to: "/opportunities", label: "Opportunities & Updates" },
+  { to: "/problems", label: "Problems", soon: true },
 ] as const;
 
 function SiteLayout() {
@@ -48,12 +47,7 @@ function SiteLayout() {
       <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
           <Link to="/" className="focus-ring flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <Compass className="h-5 w-5" aria-hidden />
-            </span>
-            <span className="font-display text-lg font-bold tracking-tight text-foreground">
-              Explorers
-            </span>
+            <Wordmark />
           </Link>
 
           <nav aria-label="Main" className="hidden flex-1 items-center gap-1 lg:flex">
@@ -63,9 +57,14 @@ function SiteLayout() {
                 to={item.to}
                 activeOptions={{ exact: item.to === "/" }}
                 activeProps={{ className: "text-primary bg-primary/10" }}
-                className="focus-ring rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="focus-ring inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 {item.label}
+                {"soon" in item && item.soon && (
+                  <span className="rounded-full bg-secondary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-secondary">
+                    Soon
+                  </span>
+                )}
               </Link>
             ))}
           </nav>
@@ -178,6 +177,8 @@ function SiteLayout() {
         </div>
       </header>
 
+      <ProfilePrompt />
+
       <main id="main" className="flex-1">
         {/* Required: nested routes render here. */}
         <Outlet />
@@ -191,9 +192,7 @@ function SiteLayout() {
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <div className="flex items-center gap-2">
-                <span className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                  <Compass className="h-4 w-4" aria-hidden />
-                </span>
+                <LogoMark className="h-7 w-7" />
                 <span className="font-display text-base font-bold text-foreground">Explorers</span>
               </div>
               <p className="mt-3 max-w-xs text-sm text-muted-foreground">
@@ -204,7 +203,7 @@ function SiteLayout() {
             <div>
               <p className="eyebrow text-muted-foreground">Explore</p>
               <ul className="mt-3 space-y-2 text-sm">
-                {NAV.slice(1, 5).map((item) => (
+                {NAV.slice(1, 4).map((item) => (
                   <li key={item.to}>
                     <Link to={item.to} className="focus-ring text-muted-foreground hover:text-foreground">
                       {item.label}
@@ -216,7 +215,7 @@ function SiteLayout() {
             <div>
               <p className="eyebrow text-muted-foreground">Grow</p>
               <ul className="mt-3 space-y-2 text-sm">
-                {NAV.slice(5).map((item) => (
+                {NAV.slice(4).map((item) => (
                   <li key={item.to}>
                     <Link to={item.to} className="focus-ring text-muted-foreground hover:text-foreground">
                       {item.label}
@@ -245,6 +244,42 @@ function SiteLayout() {
           </p>
         </div>
       </footer>
+    </div>
+  );
+}
+
+/**
+ * Shown at the top of every page while a signed-in explorer still has an
+ * empty profile — they can skip it at sign-up, so it keeps nudging.
+ */
+function ProfilePrompt() {
+  const { user, profile, loading } = useAuth();
+  const [dismissed, setDismissed] = useState(false);
+  if (loading || !user || dismissed) return null;
+  const complete = Boolean(profile?.headline || profile?.bio || (profile?.skills?.length ?? 0) > 0);
+  if (complete) return null;
+
+  return (
+    <div className="border-b border-border bg-primary/5">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-2.5 sm:px-6">
+        <UserPlus className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+        <p className="text-sm text-foreground">
+          Your profile is still empty — add a headline and skills so others see what you explore.
+        </p>
+        <Link
+          to="/profile"
+          className="focus-ring ml-auto rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary-deep"
+        >
+          Create profile
+        </Link>
+        <button
+          type="button"
+          onClick={() => setDismissed(true)}
+          className="focus-ring rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+        >
+          Later
+        </button>
+      </div>
     </div>
   );
 }

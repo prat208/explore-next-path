@@ -10,6 +10,7 @@ import { isLocked, useAccess } from "@/lib/referral";
 import { LockedCard } from "@/components/referral/LockedCard";
 import { UploadedSectionCard } from "@/components/site/UploadedSectionCard";
 import { publishedSectionsQuery } from "@/lib/sections";
+import { UpdatesSection } from "./_site.updates";
 
 export const Route = createFileRoute("/_site/opportunities")({
   head: () => ({
@@ -35,6 +36,7 @@ function OpportunitiesPage() {
   );
   const { unlocked } = useAccess();
   const [category, setCategory] = useState("all");
+  const [tab, setTab] = useState<"opportunities" | "updates">("opportunities");
 
   const categories = useMemo(
     () => ["all", ...Array.from(new Set(opportunities.map((o) => o.category)))],
@@ -48,11 +50,28 @@ function OpportunitiesPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Opportunities"
-        title="Doors that are actually open"
-        description="Each listing shows who is eligible, what it costs, where it happens and when it closes — with a link to the official source."
+        eyebrow="Opportunities & Updates"
+        title="Doors that are actually open, refreshed daily"
+        description="Verified programs with eligibility and deadlines, plus a daily crawl of AI news, hackathons and free-tier tools ranked around your interests."
       >
-        <div className="flex flex-wrap gap-2">
+        <div className="mb-3 flex flex-wrap gap-2">
+          {(["opportunities", "updates"] as const).map((option) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => setTab(option)}
+              className={cn(
+                "focus-ring rounded-full border px-3.5 py-1.5 text-sm font-semibold capitalize transition-colors",
+                tab === option
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+        <div className={cn("flex flex-wrap gap-2", tab === "updates" && "hidden")}>
           {categories.map((option) => (
             <button
               key={option}
@@ -72,7 +91,9 @@ function OpportunitiesPage() {
       </PageHeader>
 
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-        {entries.length === 0 ? (
+        {tab === "updates" ? (
+          <UpdatesSection />
+        ) : entries.length === 0 ? (
           <EmptyState title="Nothing open in this category" hint="Check back soon — listings are reviewed regularly." />
         ) : (
           <ul className="grid gap-4 sm:grid-cols-2">
@@ -130,7 +151,9 @@ function OpportunitiesPage() {
             ))}
           </ul>
         )}
-        <ReferralGate label="opportunities" hidden={unlocked ? 0 : Math.max(0, entries.length - 1)} />
+        {tab === "opportunities" && (
+          <ReferralGate label="opportunities" hidden={unlocked ? 0 : Math.max(0, entries.length - 1)} />
+        )}
       </div>
     </>
   );

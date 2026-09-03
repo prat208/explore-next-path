@@ -1,10 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { ExternalLink, RefreshCw, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { PageHeader, Pill, EmptyState, CardGridSkeleton } from "@/components/site/bits";
+import { Pill, EmptyState, CardGridSkeleton } from "@/components/site/bits";
 import { refreshTechUpdates } from "@/lib/updates.functions";
 import {
   UPDATE_KINDS,
@@ -37,10 +37,13 @@ export const Route = createFileRoute("/_site/updates")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: UpdatesPage,
+  beforeLoad: () => {
+    // Updates now live inside the merged Opportunities & Updates hub.
+    throw redirect({ to: "/opportunities" });
+  },
 });
 
-function UpdatesPage() {
+export function UpdatesSection() {
   const qc = useQueryClient();
   const { user, isEditor } = useAuth();
   const refresh = useServerFn(refreshTechUpdates);
@@ -79,13 +82,7 @@ function UpdatesPage() {
   const items = ranked;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <PageHeader
-        eyebrow="Refreshed daily"
-        title="Today in tech, and what you can join"
-        description="Live news, open hackathons, free-tier tools and student opportunities — pulled from the web every day and ordered around your interests."
-      />
-
+    <div>
       <div className="mb-6 flex flex-wrap items-center gap-2">
         {UPDATE_KINDS.map((k) => (
           <button
