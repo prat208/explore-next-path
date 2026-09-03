@@ -27,6 +27,7 @@ export const getRouter = () => {
     defaultPreloadStaleTime: 30_000,
     defaultPendingMs: 150,
     defaultPendingMinMs: 0,
+    defaultPendingComponent: RouteProgress,
   });
 
   return router;
