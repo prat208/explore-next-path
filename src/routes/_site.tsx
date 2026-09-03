@@ -57,9 +57,14 @@ function SiteLayout() {
                 to={item.to}
                 activeOptions={{ exact: item.to === "/" }}
                 activeProps={{ className: "text-primary bg-primary/10" }}
-                className="focus-ring rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="focus-ring inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 {item.label}
+                {"soon" in item && item.soon && (
+                  <span className="rounded-full bg-secondary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-secondary">
+                    Soon
+                  </span>
+                )}
               </Link>
             ))}
           </nav>
@@ -172,6 +177,8 @@ function SiteLayout() {
         </div>
       </header>
 
+      <ProfilePrompt />
+
       <main id="main" className="flex-1">
         {/* Required: nested routes render here. */}
         <Outlet />
@@ -237,6 +244,42 @@ function SiteLayout() {
           </p>
         </div>
       </footer>
+    </div>
+  );
+}
+
+/**
+ * Shown at the top of every page while a signed-in explorer still has an
+ * empty profile — they can skip it at sign-up, so it keeps nudging.
+ */
+function ProfilePrompt() {
+  const { user, profile, loading } = useAuth();
+  const [dismissed, setDismissed] = useState(false);
+  if (loading || !user || dismissed) return null;
+  const complete = Boolean(profile?.headline || profile?.bio || (profile?.skills?.length ?? 0) > 0);
+  if (complete) return null;
+
+  return (
+    <div className="border-b border-border bg-primary/5">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-2.5 sm:px-6">
+        <UserPlus className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+        <p className="text-sm text-foreground">
+          Your profile is still empty — add a headline and skills so others see what you explore.
+        </p>
+        <Link
+          to="/profile"
+          className="focus-ring ml-auto rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary-deep"
+        >
+          Create profile
+        </Link>
+        <button
+          type="button"
+          onClick={() => setDismissed(true)}
+          className="focus-ring rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+        >
+          Later
+        </button>
+      </div>
     </div>
   );
 }
