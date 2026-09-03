@@ -200,7 +200,9 @@ function SiteLayout() {
         </div>
       </header>
 
+      <GuestRedirect />
       <ProfilePrompt />
+
 
       <main id="main" className="flex-1">
         {/* Required: nested routes render here. */}
