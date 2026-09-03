@@ -60,7 +60,7 @@ export function AssistantDock() {
 
   return (
     <>
-      {needsOnboarding && (
+      {needsOnboarding && userId && (
         <OnboardingDialog
           userId={userId}
           onDone={() => setOpen(true)}
